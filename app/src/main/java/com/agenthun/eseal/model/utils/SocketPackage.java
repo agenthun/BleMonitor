@@ -15,11 +15,13 @@ public class SocketPackage {
 
     int flag;
     int count;
+    boolean ok;
     byte[] data;
 
     public SocketPackage() {
         this.flag = 0;
         this.count = 0;
+        this.ok = false;
     }
 
     public SocketPackage(int flag, int count, byte[] data) {
@@ -70,29 +72,35 @@ public class SocketPackage {
 
     public int packageExtraReceive(SocketPackage socketPackage, byte[] pdata) {
         int res = 0;
-        for (int i = 0; i < pdata.length; i++) {
-            if ((pdata[i] == SOCKET_LEAD_EXTRA_BYTE) && (socketPackage.getFlag() == 0)) {
-                socketPackage.setFlag(1);
-                socketPackage.setCount(0);
-            } else {
-                if ((socketPackage.getFlag() != 0) && (socketPackage.getFlag() != 1)) {
-                    socketPackage.setFlag(0);
+        if (socketPackage.isOk() == false) {
+            for (int i = 0; i < pdata.length; i++) {
+                if ((pdata[i] == SOCKET_LEAD_EXTRA_BYTE) && (socketPackage.getFlag() == 0) && (socketPackage.isOk() == false)) {
+                    socketPackage.setFlag(1);
+                    socketPackage.setCount(0);
+                } else {
+                    if ((socketPackage.getFlag() != 0) && (socketPackage.getFlag() != 1)) {
+                        socketPackage.setFlag(0);
+                        socketPackage.setOk(false);
+                    }
+                }
+
+                if ((socketPackage.getFlag() == 1) && (socketPackage.getCount() == 0)) {
+                    int len = 3 + 32 + 1 + 15;
+                    socketPackage.data = new byte[len];
+                }
+                if ((socketPackage.isOk() == false) && (socketPackage.getFlag() == 1) && (socketPackage.getCount() < socketPackage.getData().length)) {
+                    socketPackage.setData(socketPackage.getCount(), pdata[i]);
+                    socketPackage.setCount(socketPackage.getCount() + 1);
                 }
             }
 
-            if ((socketPackage.getFlag() == 1) && (socketPackage.getCount() == 0)) {
-                int len = 3 + 32 + 1;
-                socketPackage.data = new byte[len];
+            if (socketPackage.getCount() == socketPackage.getData().length) {
+                socketPackage.setCount(0);
+                res = 1;
+                socketPackage.setOk(true);
+            } else {
+                res = 0;
             }
-            if (socketPackage.getFlag() == 1) {
-                socketPackage.setData(socketPackage.getCount(), pdata[i]);
-                socketPackage.setCount(socketPackage.getCount() + 1);
-            }
-        }
-        if (socketPackage.getCount() == socketPackage.getData().length) {
-            res = 1;
-        } else {
-            res = 0;
         }
         return res;
     }
@@ -111,6 +119,14 @@ public class SocketPackage {
 
     public void setCount(int count) {
         this.count = count;
+    }
+
+    public boolean isOk() {
+        return ok;
+    }
+
+    public void setOk(boolean ok) {
+        this.ok = ok;
     }
 
     public byte[] getData() {

@@ -37,7 +37,7 @@ public class Crc {
 
     public static int simpleSumCRC(byte[] data, int len) {
         int simpleSum = 0;
-        for (int i = 0; i < len; i++) {
+        for (int i = 1; i < len; i++) {
             simpleSum += data[i];
         }
         simpleSum &= 0x00ff;

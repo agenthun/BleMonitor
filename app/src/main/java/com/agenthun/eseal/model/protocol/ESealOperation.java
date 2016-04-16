@@ -330,12 +330,12 @@ public class ESealOperation {
         byte temperature = buffer.get(ESEALBD_PROTOCOL_CMD_EXTRA_DATA_OFFSET + 6);
         byte humidity = buffer.get(ESEALBD_PROTOCOL_CMD_EXTRA_DATA_OFFSET + 7);
         byte state = buffer.get(ESEALBD_PROTOCOL_CMD_EXTRA_DATA_OFFSET + 8);
-        boolean locked = (state & 0x01) == 1 ? true : false;
+        boolean locked = (state & 0x01) == 1 ? false : true;
         boolean isTemperatureAlarm = (state & 0x02) == 0 ? false : true;
         boolean isHumidityAlarm = (state & 0x04) == 0 ? false : true;
-        short shakeX = (short) (buffer.getShort(ESEALBD_PROTOCOL_CMD_EXTRA_DATA_OFFSET + 9) >> 8);
-        short shakeY = (short) (buffer.getShort(ESEALBD_PROTOCOL_CMD_EXTRA_DATA_OFFSET + 11) >> 8);
-        short shakeZ = (short) (buffer.getShort(ESEALBD_PROTOCOL_CMD_EXTRA_DATA_OFFSET + 13) >> 8);
+        short shakeX = (short) (buffer.getShort(ESEALBD_PROTOCOL_CMD_EXTRA_DATA_OFFSET + 9) >> 0);
+        short shakeY = (short) (buffer.getShort(ESEALBD_PROTOCOL_CMD_EXTRA_DATA_OFFSET + 11) >> 0);
+        short shakeZ = (short) (buffer.getShort(ESEALBD_PROTOCOL_CMD_EXTRA_DATA_OFFSET + 13) >> 0);
 
         byte[] message = new byte[33];
         for (int i = 0; i < 33 && i < (buffer.capacity() - 15); i++) {
@@ -343,9 +343,10 @@ public class ESealOperation {
         }
 
         try {
-            String smsMessage = new String(message, "utf-8");
+//            String smsMessage = new String(message, "utf-8");
+            String smsMessage = new String(message, "gbk");
             stateExtraType.setSmsMessage(smsMessage);
-        } catch (UnsupportedEncodingException e) {
+        } catch (Exception e) {
             stateExtraType.setSmsMessage("msg error");
         }
 

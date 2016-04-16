@@ -73,9 +73,9 @@ public class DeviceOperationActivity extends AppCompatActivity {
     private int key = 0x87654321;
 
     private static final byte extraPackageBegin = 0x02;
-    private static final byte extraPackageDataLength = 0x32;
-    private static final byte extraPackageCommand = 0x30;
-    private static final byte extraPackageTotalLength = 36;
+    private static final byte extraPackageDataLength = 0x31;
+    private static final byte extraPackageCommand = 0x40;
+    private static final byte extraPackageTotalLength = 36 + 15;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -302,8 +302,8 @@ public class DeviceOperationActivity extends AppCompatActivity {
         public void didPackageSended(boolean succeed) {
             Log.d(TAG, "didPackageSended() returned: " + succeed);
             if (succeed) {
-                Snackbar.make(nestedScrollView, getString(R.string.success_device_send_data), Snackbar.LENGTH_SHORT)
-                        .setAction("Action", null).show();
+/*                Snackbar.make(nestedScrollView, getString(R.string.success_device_send_data), Snackbar.LENGTH_SHORT)
+                        .setAction("Action", null).show();*/
             } else {
                 Snackbar.make(nestedScrollView, getString(R.string.fail_device_send_data), Snackbar.LENGTH_SHORT)
                         .setAction("Action", null).show();
@@ -323,8 +323,7 @@ public class DeviceOperationActivity extends AppCompatActivity {
 
             if (socketPackageReceived.packageExtraReceive(socketPackageReceived, packageToSend) == 1) {
                 Log.d(TAG, "didPackageReceived() returned: ok");
-                socketPackageReceived.setFlag(0);
-                socketPackageReceived.setCount(0);
+
                 byte[] receiveData = socketPackageReceived.getData();
                 int lenTotal = receiveData.length;
                 Log.d(TAG, "getCount() returned: " + lenTotal);
@@ -352,9 +351,10 @@ public class DeviceOperationActivity extends AppCompatActivity {
                         textTemperature.setText(String.valueOf(stateExtraType.getTemperature()));
                         textHumidity.setText(String.valueOf(stateExtraType.getHumidity()));
                         textlocked.setText(String.valueOf(isLockStringQuery));
-                        textShakeX.setText(String.valueOf(stateExtraType.getShakeX()));
-                        textShakeY.setText(String.valueOf(stateExtraType.getShakeY()));
-                        textShakeZ.setText(String.valueOf(stateExtraType.getShakeZ()));
+//                        textShakeX.setText(String.valueOf(stateExtraType.getShakeX()));
+                        textShakeX.setText(Integer.toHexString(stateExtraType.getShakeX()));
+                        textShakeY.setText(Integer.toHexString(stateExtraType.getShakeY()));
+                        textShakeZ.setText(Integer.toHexString(stateExtraType.getShakeZ()));
                         textSmsMessage.setText(stateExtraType.getSmsMessage());
 
                         if (stateExtraType.isTemperatureAlarm() || stateExtraType.isHumidityAlarm()) {
@@ -374,6 +374,9 @@ public class DeviceOperationActivity extends AppCompatActivity {
                         sendData(settingData);
                     }
                 }
+                socketPackageReceived.setFlag(0);
+                socketPackageReceived.setCount(0);
+                socketPackageReceived.setOk(false);
             }
 
             /*if (socketPackageReceived.packageReceive(socketPackageReceived, packageToSend) == 1) {
