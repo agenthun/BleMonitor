@@ -312,6 +312,7 @@ public class ESealOperation {
         }
     }
 
+    //北斗主板与操作面板通信协议
     public static void operationGetStateExtraData(ByteBuffer buffer, StateExtraType stateExtraType) {
         int year = buffer.get(ESEALBD_PROTOCOL_CMD_EXTRA_DATA_OFFSET + 0);
         year = (year >> 4) * 10 + (year & 0x0f) + 2000;
@@ -337,14 +338,14 @@ public class ESealOperation {
         short shakeY = (short) (buffer.getShort(ESEALBD_PROTOCOL_CMD_EXTRA_DATA_OFFSET + 11) >> 0);
         short shakeZ = (short) (buffer.getShort(ESEALBD_PROTOCOL_CMD_EXTRA_DATA_OFFSET + 13) >> 0);
 
-        byte[] message = new byte[33];
-        for (int i = 0; i < 33 && i < (buffer.capacity() - 15); i++) {
+        byte[] message = new byte[32];
+        for (int i = 0; i < 32 && i < (buffer.capacity() - 15); i++) {
             message[i] = buffer.get(ESEALBD_PROTOCOL_CMD_EXTRA_DATA_OFFSET + 15 + i);
         }
 
         try {
-//            String smsMessage = new String(message, "utf-8");
-            String smsMessage = new String(message, "gbk");
+            String smsMessage = new String(message, "unicode");
+//            String smsMessage = new String(message, "gbk");
             stateExtraType.setSmsMessage(smsMessage);
         } catch (Exception e) {
             stateExtraType.setSmsMessage("msg error");
