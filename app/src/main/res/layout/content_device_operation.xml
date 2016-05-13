@@ -21,7 +21,7 @@
         <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingBottom="20dp">
+            android:paddingBottom="@dimen/spacing_text_layout">
 
             <android.support.v7.widget.AppCompatEditText
                 android:id="@+id/sms_edit_message"
@@ -35,6 +35,21 @@
         <android.support.v7.widget.AppCompatTextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:text="@string/text_hint_sms_message"
+            android:textColor="@android:color/primary_text_light"
+            android:textSize="16sp" />
+
+        <android.support.v7.widget.AppCompatTextView
+            android:id="@+id/sms_message"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="@dimen/spacing_text_layout"
+            android:textColor="@android:color/secondary_text_light"
+            android:textSize="14sp" />
+
+        <android.support.v7.widget.AppCompatTextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:text="@string/text_hint_current_time"
             android:textColor="@android:color/primary_text_light"
             android:textSize="16sp" />
@@ -43,7 +58,7 @@
             android:id="@+id/current_time"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingBottom="20dp"
+            android:paddingBottom="@dimen/spacing_text_layout"
             android:text="2016/01/01 00:00:00"
             android:textColor="@android:color/secondary_text_light"
             android:textSize="14sp" />
@@ -59,7 +74,7 @@
             android:id="@+id/temperature"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingBottom="20dp"
+            android:paddingBottom="@dimen/spacing_text_layout"
             android:text="26"
             android:textColor="@android:color/secondary_text_light"
             android:textSize="14sp" />
@@ -75,7 +90,7 @@
             android:id="@+id/humidity"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingBottom="20dp"
+            android:paddingBottom="@dimen/spacing_text_layout"
             android:text="70"
             android:textColor="@android:color/secondary_text_light"
             android:textSize="14sp" />
@@ -91,7 +106,7 @@
             android:id="@+id/locked"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingBottom="20dp"
+            android:paddingBottom="@dimen/spacing_text_layout"
             android:text="打开"
             android:textColor="@android:color/secondary_text_light"
             android:textSize="14sp" />
@@ -107,7 +122,7 @@
             android:id="@+id/shake_x"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingBottom="20dp"
+            android:paddingBottom="@dimen/spacing_text_layout"
             android:text="0"
             android:textColor="@android:color/secondary_text_light"
             android:textSize="14sp" />
@@ -123,7 +138,7 @@
             android:id="@+id/shake_y"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingBottom="20dp"
+            android:paddingBottom="@dimen/spacing_text_layout"
             android:text="0"
             android:textColor="@android:color/secondary_text_light"
             android:textSize="14sp" />
@@ -139,24 +154,10 @@
             android:id="@+id/shake_z"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingBottom="20dp"
+            android:paddingBottom="@dimen/spacing_text_layout"
             android:text="0"
             android:textColor="@android:color/secondary_text_light"
             android:textSize="14sp" />
 
-        <android.support.v7.widget.AppCompatTextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/text_hint_sms_message"
-            android:textColor="@android:color/primary_text_light"
-            android:textSize="16sp" />
-
-        <android.support.v7.widget.AppCompatTextView
-            android:id="@+id/sms_message"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingBottom="20dp"
-            android:textColor="@android:color/secondary_text_light"
-            android:textSize="14sp" />
     </LinearLayout>
 </android.support.v4.widget.NestedScrollView>
