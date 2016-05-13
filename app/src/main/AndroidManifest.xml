@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.agenthun.eseal">
+    package="com.agenthun.blemonitor">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -17,7 +17,7 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
-        android:name=".App"
+        android:name="com.agenthun.blemonitor.App"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher_app"
         android:label="@string/app_name"
@@ -25,7 +25,7 @@
         android:theme="@style/AppTheme">
 
         <activity
-            android:name=".activity.MainActivity"
+            android:name="com.agenthun.blemonitor.activity.MainActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
 
@@ -37,19 +37,20 @@
         </activity>
 
         <activity
-            android:name=".activity.DeviceOperationActivity"
+            android:name="com.agenthun.blemonitor.activity.DeviceOperationActivity"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar.TextAppearance"></activity>
+            android:theme="@style/AppTheme.NoActionBar.TextAppearance"
+            android:windowSoftInputMode="adjustResize|stateHidden"></activity>
 
         <activity
-            android:name=".activity.DeviceSettingActivity"
+            android:name="com.agenthun.blemonitor.activity.DeviceSettingActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar.TextAppearance"
             android:windowSoftInputMode="adjustResize|stateHidden"></activity>
 
         <service
-            android:name=".connectivity.ble.ACSUtilityService"
+            android:name="com.agenthun.blemonitor.connectivity.ble.ACSUtilityService"
             android:enabled="true"></service>
     </application>
 

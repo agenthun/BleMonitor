@@ -23,7 +23,7 @@
         app:floatingSearch_searchBarMarginLeft="@dimen/spacing_normal"
         app:floatingSearch_searchBarMarginRight="@dimen/spacing_normal"
         app:floatingSearch_searchBarMarginTop="@dimen/activity_vertical_margin"
-        app:floatingSearch_searchHint="@string/text_hint_send_sms_content"
+        app:floatingSearch_searchHint="@string/text_hint_track_content"
         app:floatingSearch_showSearchKey="false" />
 
 </RelativeLayout>

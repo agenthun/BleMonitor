@@ -25,6 +25,18 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <include layout="@layout/content_device_operation" />
+    <include
+        android:id="@+id/textViewLayout"
+        layout="@layout/content_device_operation" />
+
+    <com.agenthun.blemonitor.view.CheckableFab
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_done_black_24dp"
+        android:tint="@color/white"
+        app:backgroundTint="@color/colorAccent"
+        app:layout_anchor="@id/textViewLayout"
+        app:layout_anchorGravity="top|end" />
 
 </android.support.design.widget.CoordinatorLayout>

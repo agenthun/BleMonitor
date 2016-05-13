@@ -13,7 +13,7 @@
         android:id="@+id/actionType"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/page_title_send_sms"
+        android:text="@string/page_title_track"
         android:textColor="?android:textColor"
         android:textSize="16sp" />
 </RelativeLayout>
