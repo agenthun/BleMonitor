@@ -90,6 +90,14 @@ public class ScanDeviceFragment extends Fragment implements SwipeRefreshLayout.O
         swipeRefreshLayout.setColorSchemeColors(R.color.colorPrimary, R.color.colorPrimaryDark,
                 R.color.colorAccent, R.color.colorAccentDark);
 
+        swipeRefreshLayout.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                swipeRefreshLayout.setRefreshing(true);
+            }
+        }, 1000);
+        onRefresh();
+
         deviceList = new ArrayList<>();
 
         recyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
