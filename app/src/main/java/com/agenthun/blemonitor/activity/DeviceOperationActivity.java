@@ -156,6 +156,12 @@ public class DeviceOperationActivity extends AppCompatActivity {
         finish();
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        utilEnable = false;
+    }
+
     private void adjustFab(final boolean settingCorrect) {
         fab.setChecked(settingCorrect);
         mHideFabRunnable = new Runnable() {
@@ -330,7 +336,7 @@ public class DeviceOperationActivity extends AppCompatActivity {
             handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    if (!isPortOpen) {
+                    if (!isPortOpen && utilEnable) {
                         getProgressDialog().cancel();
                         new AlertDialog.Builder(DeviceOperationActivity.this)
                                 .setTitle(mCurrentPort._device.getName())
