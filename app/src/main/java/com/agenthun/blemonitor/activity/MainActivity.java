@@ -72,7 +72,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onPageSelected(int position) {
                 Log.d(TAG, "onPageSelected() returned: " + position);
-                if (position == 1) {
+                if (position == 0) {
                     fab.setVisibility(View.VISIBLE);
                     ViewCompat.animate(fab).scaleX(1).scaleY(1)
                             .setInterpolator(new LinearOutSlowInInterpolator())
@@ -118,13 +118,16 @@ public class MainActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String token = App.getToken();
+                if (mOnFABClickListener != null) {
+                    mOnFABClickListener.OnFABClickListener(view);
+                }
+/*                String token = App.getToken();
                 if (mContainerNo != null && mContainerId != null) {
                     //showFreightDataListByBottomSheet(token, mContainerId, mContainerNo);
                 } else {
                     Snackbar.make(view, getString(R.string.text_hint_track_content), Snackbar.LENGTH_SHORT)
                             .setAction("Action", null).show();
-                }
+                }*/
             }
         });
 
@@ -222,5 +225,16 @@ public class MainActivity extends AppCompatActivity
                         }
                     });
         }
+    }
+
+    //FABClick interface
+    public interface OnFABClickListener {
+        void OnFABClickListener(View view);
+    }
+
+    private OnFABClickListener mOnFABClickListener;
+
+    public void setOnItemClickListener(OnFABClickListener mOnFABClickListener) {
+        this.mOnFABClickListener = mOnFABClickListener;
     }
 }

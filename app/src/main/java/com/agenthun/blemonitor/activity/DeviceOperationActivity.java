@@ -399,7 +399,7 @@ public class DeviceOperationActivity extends AppCompatActivity {
 //                Snackbar.make(fab, getString(R.string.success_device_send_data), Snackbar.LENGTH_SHORT)
 //                        .setAction("Action", null).show();
             } else {
-                Snackbar.make(fab, getString(R.string.fail_device_send_data), Snackbar.LENGTH_SHORT)
+                Snackbar.make(fab, getResources().getString(R.string.fail_device_send_data), Snackbar.LENGTH_SHORT)
                         .setAction("Action", null).show();
             }
         }
@@ -452,8 +452,9 @@ public class DeviceOperationActivity extends AppCompatActivity {
                     if (stateExtraType.isTemperatureAlarm()) msg.append("\r\n\r\n温度指数超标");
                     if (stateExtraType.isHumidityAlarm()) msg.append("\r\n\r\n湿度指数超标");
 
+                    Log.d(TAG, "AlertDialog.Builder");
                     AlertDialog.Builder builder = new AlertDialog.Builder(DeviceOperationActivity.this);
-                    builder.setTitle(R.string.device_alarm_title)
+                    builder.setTitle(getResources().getString(R.string.device_alarm_title))
                             .setMessage(msg.toString())
                             .setPositiveButton(R.string.text_ok, null).show();
                 }
@@ -480,7 +481,7 @@ public class DeviceOperationActivity extends AppCompatActivity {
         mProgressDialog = new AppCompatDialog(DeviceOperationActivity.this, AppCompatDelegate.MODE_NIGHT_AUTO);
         mProgressDialog.setCanceledOnTouchOutside(false);
         mProgressDialog.setContentView(R.layout.dialog_device_connecting);
-        mProgressDialog.setTitle(getString(R.string.device_connecting));
+        mProgressDialog.setTitle(getResources().getString(R.string.device_connecting));
         return mProgressDialog;
     }
 
