@@ -22,6 +22,8 @@ import android.view.View;
 import android.view.WindowManager;
 
 import com.agenthun.blemonitor.R;
+import com.agenthun.blemonitor.bean.base.HistoryData;
+import com.agenthun.blemonitor.bean.base.HistoryDataDBUtil;
 import com.agenthun.blemonitor.connectivity.ble.ACSUtility;
 import com.agenthun.blemonitor.model.protocol.ESealOperation;
 import com.agenthun.blemonitor.model.utils.SocketPackage;
@@ -33,15 +35,11 @@ import java.nio.ByteBuffer;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Queue;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 /**
  * @project ESeal
@@ -53,16 +51,30 @@ public class DeviceOperationActivity extends AppCompatActivity {
 
     private static final int DEVICE_SETTING = 1;
     private static final long TIME_OUT = 30000;
+    private static final short SHAKE_ALARM = 125;
+
+    private static final int ACTION_TYPE_UNLOCK = 0;
+    private static final int ACTION_TYPE_TEMPERATURE = 1;
+    private static final int ACTION_TYPE_HUMIDITY = 2;
+    private static final int ACTION_TYPE_SHAKE = 3;
+    private static final int ACTION_TYPE_SEND_MESSAGE = 4;
+    private static final int ACTION_TYPE_RECEIVE_MESSAGE = 5;
 
     private ACSUtility.blePort mCurrentPort;
     private ACSUtility utility;
     private boolean utilEnable = false;
     private boolean isPortOpen = false;
 
+    private boolean isSlowShow = false;
+    private boolean isFastShow = false;
+
     private AppCompatDialog mProgressDialog;
 
     @Bind(R.id.fab)
     CheckableFab fab;
+
+    @Bind(R.id.queryFab)
+    FloatingActionButton queryFab;
 
     @Bind(R.id.current_time)
     AppCompatTextView textCurrentTime;
@@ -97,6 +109,8 @@ public class DeviceOperationActivity extends AppCompatActivity {
     private static final byte extraPackageDataLength = 0x31;
     private static final byte extraPackageCommand = 0x40;
     private static final byte extraPackageTotalLength = 36 + 15;
+
+    private HistoryDataDBUtil historyDataDBUtil;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -147,6 +161,12 @@ public class DeviceOperationActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        setupDatabase();
     }
 
     @Override
@@ -216,8 +236,13 @@ public class DeviceOperationActivity extends AppCompatActivity {
 
     @OnClick(R.id.queryFab)
     public void onQueryHistoryBtnClick() {
-        Log.d(TAG, "onQueryHistoryBtnClick() returned: ");
-        showDataListByBottomSheet();
+//        Log.d(TAG, "onQueryHistoryBtnClick() returned: ");
+        if (historyDataDBUtil.getDatas().size() > 0) {
+            showDataListByBottomSheet();
+        } else {
+            Snackbar.make(queryFab, getString(R.string.notify_no_history_data), Snackbar.LENGTH_SHORT)
+                    .setAction("Action", null).show();
+        }
     }
 
 /*    @OnClick(R.id.card_seting)
@@ -414,6 +439,13 @@ public class DeviceOperationActivity extends AppCompatActivity {
                 };
                 mHandler.postDelayed(mHideFabRunnable, 2000);
 
+                Calendar calendar = Calendar.getInstance();
+                StringBuffer time = new StringBuffer();
+                time.append(new SimpleDateFormat("yyyy/MM/dd HH:mm:ss")
+                        .format(calendar.getTime()));
+                historyDataDBUtil.insertData(new HistoryData(ACTION_TYPE_SEND_MESSAGE, time.toString(), smsEditMessage.getText().toString().trim()));
+                Log.d(TAG, "historyDataDBUtil insertData: " + historyDataDBUtil.getDatas().get(0).toString());
+
 //                Snackbar.make(fab, getString(R.string.success_device_send_data), Snackbar.LENGTH_SHORT)
 //                        .setAction("Action", null).show();
             } else {
@@ -441,11 +473,11 @@ public class DeviceOperationActivity extends AppCompatActivity {
                 final ByteBuffer buffer = queue.poll();
 
                 //开始解析额外数据报文
-                StateExtraType stateExtraType = new StateExtraType();
+                final StateExtraType stateExtraType = new StateExtraType();
                 ESealOperation.operationGetStateExtraData(buffer, stateExtraType);
 
                 Calendar calendar = stateExtraType.getCalendar();
-                StringBuffer time = new StringBuffer();
+                final StringBuffer time = new StringBuffer();
                 time.append(new SimpleDateFormat("yyyy/MM/dd HH:mm:ss")
                         .format(calendar.getTime()));
 
@@ -462,19 +494,65 @@ public class DeviceOperationActivity extends AppCompatActivity {
 //                textShakeX.setText(Integer.toHexString(stateExtraType.getShakeX()));
 //                textShakeY.setText(Integer.toHexString(stateExtraType.getShakeY()));
 //                textShakeZ.setText(Integer.toHexString(stateExtraType.getShakeZ()));
+
+                if (!TextUtils.isEmpty(stateExtraType.getSmsMessage())
+                        && !TextUtils.equals(textSmsMessage.getText(), stateExtraType.getSmsMessage())) {
+                    historyDataDBUtil.insertData(new HistoryData(ACTION_TYPE_RECEIVE_MESSAGE, textCurrentTime.getText().toString(), stateExtraType.getSmsMessage()));
+                    Log.d(TAG, "historyDataDBUtil insertData: " + historyDataDBUtil.getDatas().get(0).toString());
+                }
+
                 textSmsMessage.setText(stateExtraType.getSmsMessage());
 
-                if (stateExtraType.isTemperatureAlarm() || stateExtraType.isHumidityAlarm()) {
-                    StringBuilder msg = new StringBuilder(time.toString()
-                            + "\r\n\r\n锁状态 " + isLockStringQuery);
-                    if (stateExtraType.isTemperatureAlarm()) msg.append("\r\n\r\n温度指数超标");
-                    if (stateExtraType.isHumidityAlarm()) msg.append("\r\n\r\n湿度指数超标");
+                if (!isSlowShow) {
+                    isSlowShow = true;
+                    if (stateExtraType.isTemperatureAlarm() || stateExtraType.isHumidityAlarm()) {
+                        StringBuilder msg = new StringBuilder(time.toString()
+                                + "\r\n\r\n锁状态 " + isLockStringQuery);
+                        if (stateExtraType.isTemperatureAlarm()) msg.append("\r\n\r\n温度指数超标");
+                        if (stateExtraType.isHumidityAlarm()) msg.append("\r\n\r\n湿度指数超标");
 
-                    Log.d(TAG, "AlertDialog.Builder");
-                    AlertDialog.Builder builder = new AlertDialog.Builder(DeviceOperationActivity.this);
-                    builder.setTitle(getResources().getString(R.string.device_alarm_title))
-                            .setMessage(msg.toString())
-                            .setPositiveButton(R.string.text_ok, null).show();
+                        Log.d(TAG, "AlertDialog.Builder");
+                        AlertDialog.Builder builder = new AlertDialog.Builder(DeviceOperationActivity.this);
+                        builder.setTitle(getResources().getString(R.string.device_alarm_title))
+                                .setMessage(msg.toString())
+                                .setPositiveButton(R.string.text_ok, new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        Log.d(TAG, "AlertDialog onClick()");
+
+                                        if (stateExtraType.isTemperatureAlarm()) {
+                                            historyDataDBUtil.insertData(new HistoryData(ACTION_TYPE_TEMPERATURE, textCurrentTime.getText().toString(), ""));
+                                            Log.d(TAG, "historyDataDBUtil insertData: " + historyDataDBUtil.getDatas().get(0).toString());
+                                        }
+                                        if (stateExtraType.isHumidityAlarm()) {
+                                            historyDataDBUtil.insertData(new HistoryData(ACTION_TYPE_HUMIDITY, textCurrentTime.getText().toString(), ""));
+                                            Log.d(TAG, "historyDataDBUtil insertData: " + historyDataDBUtil.getDatas().get(0).toString());
+                                        }
+                                    }
+                                }).show();
+                    }
+                }
+
+                if (!isFastShow) {
+                    isFastShow = true;
+                    if (!stateExtraType.isLocked()) {
+                        historyDataDBUtil.insertData(new HistoryData(ACTION_TYPE_UNLOCK, textCurrentTime.getText().toString(), ""));
+                        Log.d(TAG, "historyDataDBUtil insertData: " + historyDataDBUtil.getDatas().get(0).toString());
+                    }
+                    if (stateExtraType.getShakeX() >= SHAKE_ALARM
+                            || stateExtraType.getShakeY() >= SHAKE_ALARM
+                            || stateExtraType.getShakeZ() >= SHAKE_ALARM) {
+                        historyDataDBUtil.insertData(new HistoryData(ACTION_TYPE_SHAKE, textCurrentTime.getText().toString(), ""));
+                        Log.d(TAG, "historyDataDBUtil insertData: " + historyDataDBUtil.getDatas().get(0).toString());
+                    }
+
+                    //5 minutes
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            isFastShow = false;
+                        }
+                    }, 300000);
                 }
 
 //                //握手响应
@@ -507,8 +585,12 @@ public class DeviceOperationActivity extends AppCompatActivity {
         utility.writePort(data);
     }
 
-    private void showDataListByBottomSheet(String token, String containerId, final String containerNo) {
-        List<Detail> details = response.body().getDetails();
-        BottomSheetDialogView.show(DeviceOperationActivity.this, containerNo, details);
+    private void showDataListByBottomSheet() {
+        BottomSheetDialogView.show(DeviceOperationActivity.this, historyDataDBUtil.getDatas());
+    }
+
+
+    private void setupDatabase() {
+        historyDataDBUtil = HistoryDataDBUtil.getInstance(this);
     }
 }

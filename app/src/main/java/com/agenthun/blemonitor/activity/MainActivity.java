@@ -27,11 +27,13 @@ import com.agenthun.blemonitor.R;
 import com.agenthun.blemonitor.adapter.SectionsPagerAdapter;
 import com.agenthun.blemonitor.bean.AllDynamicDataByContainerId;
 import com.agenthun.blemonitor.bean.base.Detail;
+import com.agenthun.blemonitor.bean.base.HistoryData;
 import com.agenthun.blemonitor.connectivity.manager.RetrofitManager;
 import com.agenthun.blemonitor.connectivity.service.PathType;
 import com.agenthun.blemonitor.utils.ApiLevelHelper;
 import com.agenthun.blemonitor.view.BottomSheetDialogView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
@@ -48,9 +50,6 @@ public class MainActivity extends AppCompatActivity
 
     private ViewPager mViewPager;
     private FloatingActionButton fab;
-
-    private String mContainerNo = null;
-    private String mContainerId = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -139,16 +138,6 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-
-        CoordinatorLayout coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinatorLayout);
-
-        mSectionsPagerAdapter.setOnDataChangeListener(new SectionsPagerAdapter.OnDataChangeListener() {
-            @Override
-            public void onContainerDataChange(String containerNo, String containerId) {
-                mContainerNo = containerNo;
-                mContainerId = containerId;
-            }
-        });
     }
 
     @Override
@@ -206,25 +195,6 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
-    }
-
-    private void showFreightDataListByBottomSheet(String token, String containerId, final String containerNo) {
-        if (token != null) {
-            RetrofitManager.builder(PathType.BASE_WEB_SERVICE)
-                    .getFreightDataListObservable(token, containerId, 1)
-                    .enqueue(new Callback<AllDynamicDataByContainerId>() {
-                        @Override
-                        public void onResponse(Call<AllDynamicDataByContainerId> call, Response<AllDynamicDataByContainerId> response) {
-                            List<Detail> details = response.body().getDetails();
-                            BottomSheetDialogView.show(MainActivity.this, containerNo, details);
-                        }
-
-                        @Override
-                        public void onFailure(Call<AllDynamicDataByContainerId> call, Throwable t) {
-                            Log.d(TAG, "Response onFailure: " + t.getLocalizedMessage());
-                        }
-                    });
-        }
     }
 
     //FABClick interface

@@ -30,11 +30,7 @@ public class HistoryDataDBUtil {
 
     public static HistoryDataDBUtil getInstance(Context context) {
         if (instance == null) {
-            synchronized (HistoryDataDBUtil.class) {
-                if (instance == null) {
-                    instance = new HistoryDataDBUtil(context);
-                }
-            }
+            instance = new HistoryDataDBUtil(context);
         }
         return instance;
     }
@@ -55,21 +51,18 @@ public class HistoryDataDBUtil {
 
     public void deleteData(HistoryData historyData) {
         Cursor cursor = null;
-        String userId = (String) UserData.getObjectByKey(mContext, "objectId");
-        String where = NoteDBHelper.NoteTable.USER_ID + " = '" + userId
-                + "' AND " + NoteDBHelper.NoteTable.OBJECT_ID + " = '" + noteInfo.getObjectId() + "'";
-        cursor = noteDBHelper.query(NoteDBHelper.TABLE_NAME, null, where, null, null, null, null);
+        String where = HistoryDataDBHelper.HistoryDataTable._ID + " = '" + historyData.getId() + "'";
+        cursor = historyDataDBHelper.query(HistoryDataDBHelper.TABLE_NAME, null, where, null, null, null, null);
         if (cursor != null && cursor.getCount() > 0) {
-            noteDBHelper.delete(NoteDBHelper.TABLE_NAME, where, null);
+            historyDataDBHelper.delete(HistoryDataDBHelper.TABLE_NAME, where, null);
             Log.i(TAG, "delete success");
         }
         if (cursor == null) {
-            where = NoteDBHelper.NoteTable.USER_ID + " = '" + userId
-                    + "' AND " + NoteDBHelper.NoteTable.NOTE_TITLE + " = '" + noteInfo.getNoteTitle()
-                    + "' AND " + NoteDBHelper.NoteTable.NOTE_COMPOSE + " = '" + noteInfo.getNoteCompose()
-                    + "' AND " + NoteDBHelper.NoteTable.NOTE_CREATE_TIME + " = '" + noteInfo.getNoteCreateTime()
-                    + "' AND " + NoteDBHelper.NoteTable.NOTE_COLOR + " = '" + noteInfo.getNoteColor() + "'";
-            cursor = noteDBHelper.query(NoteDBHelper.TABLE_NAME, null, where, null, null, null, null);
+            where = HistoryDataDBHelper.HistoryDataTable._ID + " = '" + historyData.getId()
+                    + "' AND " + HistoryDataDBHelper.HistoryDataTable.ACTION_TYPE + " = '" + historyData.getActionType()
+                    + "' AND " + HistoryDataDBHelper.HistoryDataTable.CREATE_DATE_TIME + " = '" + historyData.getCreateDatetime()
+                    + "' AND " + HistoryDataDBHelper.HistoryDataTable.CONTENT + " = '" + historyData.getContent() + "'";
+            cursor = historyDataDBHelper.query(HistoryDataDBHelper.TABLE_NAME, null, where, null, null, null, null);
             if (cursor != null && cursor.getCount() > 0) {
                 historyDataDBHelper.delete(historyDataDBHelper.TABLE_NAME, where, null);
                 Log.i(TAG, "delete success");
@@ -85,38 +78,34 @@ public class HistoryDataDBUtil {
     public long insertData(HistoryData historyData) {
         long uri = 0;
         Cursor cursor = null;
-        String userId = (String) UserData.getObjectByKey(mContext, "objectId");
-        String where = HistoryDataDBHelper.HistoryDataTable.USER_ID + " = '" + userId
-                + "' AND " + HistoryDataDBHelper.HistoryDataTable.OBJECT_ID + " = '" + noteInfo.getObjectId() + "'";
-        cursor = noteDBHelper.query(NoteDBHelper.TABLE_NAME, null, where, null, null, null, null);
+        String where = HistoryDataDBHelper.HistoryDataTable._ID + " = '" + historyData.getId() + "'";
+        cursor = historyDataDBHelper.query(HistoryDataDBHelper.TABLE_NAME, null, where, null, null, null, null);
         if (cursor != null && cursor.getCount() > 0) {
             cursor.moveToFirst();
             ContentValues contentValues = new ContentValues();
-            contentValues.put(NoteDBHelper.NoteTable.NOTE_TITLE, noteInfo.getNoteTitle());
-            contentValues.put(NoteDBHelper.NoteTable.NOTE_COMPOSE, noteInfo.getNoteCompose());
-            contentValues.put(NoteDBHelper.NoteTable.NOTE_CREATE_TIME, noteInfo.getNoteCreateTime());
-            contentValues.put(NoteDBHelper.NoteTable.NOTE_COLOR, noteInfo.getNoteColor());
-            noteDBHelper.update(NoteDBHelper.TABLE_NAME, contentValues, where, null);
+            contentValues.put(HistoryDataDBHelper.HistoryDataTable._ID, historyData.getId());
+            contentValues.put(HistoryDataDBHelper.HistoryDataTable.ACTION_TYPE, historyData.getActionType());
+            contentValues.put(HistoryDataDBHelper.HistoryDataTable.CREATE_DATE_TIME, historyData.getCreateDatetime());
+            contentValues.put(HistoryDataDBHelper.HistoryDataTable.CONTENT, historyData.getContent());
+            historyDataDBHelper.update(HistoryDataDBHelper.TABLE_NAME, contentValues, where, null);
             Log.i(TAG, "update");
         } else {
             ContentValues contentValues = new ContentValues();
-            contentValues.put(NoteDBHelper.NoteTable.USER_ID, userId);
-            contentValues.put(NoteDBHelper.NoteTable.OBJECT_ID, noteInfo.getObjectId());
-            contentValues.put(NoteDBHelper.NoteTable.NOTE_TITLE, noteInfo.getNoteTitle());
-            contentValues.put(NoteDBHelper.NoteTable.NOTE_COMPOSE, noteInfo.getNoteCompose());
-            contentValues.put(NoteDBHelper.NoteTable.NOTE_CREATE_TIME, noteInfo.getNoteCreateTime());
-            contentValues.put(NoteDBHelper.NoteTable.NOTE_COLOR, noteInfo.getNoteColor());
-            uri = noteDBHelper.insert(NoteDBHelper.TABLE_NAME, null, contentValues);
+            contentValues.put(HistoryDataDBHelper.HistoryDataTable._ID, historyData.getId());
+            contentValues.put(HistoryDataDBHelper.HistoryDataTable.ACTION_TYPE, historyData.getActionType());
+            contentValues.put(HistoryDataDBHelper.HistoryDataTable.CREATE_DATE_TIME, historyData.getCreateDatetime());
+            contentValues.put(HistoryDataDBHelper.HistoryDataTable.CONTENT, historyData.getContent());
+            uri = historyDataDBHelper.insert(HistoryDataDBHelper.TABLE_NAME, null, contentValues);
             Log.i(TAG, "insert");
         }
         if (cursor != null) {
             cursor.close();
-            noteDBHelper.close();
         }
+        historyDataDBHelper.close();
         return uri;
     }
 
-    public List<HistoryData> queryDatas() {
+    public List<HistoryData> getDatas() {
         List<HistoryData> historyDatas = null;
         Cursor cursor = historyDataDBHelper.query(HistoryDataDBHelper.TABLE_NAME, null, null, null, null, null, null);
         Log.i(TAG, cursor.getCount() + "");
@@ -125,18 +114,20 @@ public class HistoryDataDBUtil {
             return null;
         }
         historyDatas = new ArrayList<>();
-        for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
-            HistoryData historyData = new HistoryData();
-            historyData.setObjectId(cursor.getString(cursor.getColumnIndex(NoteDBHelper.NoteTable.OBJECT_ID)));
-            historyData.setNoteTitle(cursor.getString(3));
-            historyData.setNoteCompose(cursor.getString(4));
-            historyData.setNoteCreateTime(cursor.getString(5));
-            historyData.setNoteColor(cursor.getInt(6));
-            historyDatas.add(0, historyData);
+        if (cursor != null && cursor.getCount() > 0) {
+            while (cursor.moveToNext()) {
+                HistoryData historyData = new HistoryData();
+                historyData.setId(cursor.getString(cursor.getColumnIndexOrThrow(HistoryDataDBHelper.HistoryDataTable._ID)));
+                historyData.setActionType(cursor.getInt(cursor.getColumnIndexOrThrow(HistoryDataDBHelper.HistoryDataTable.ACTION_TYPE)));
+                historyData.setCreateDatetime(cursor.getString(cursor.getColumnIndexOrThrow(HistoryDataDBHelper.HistoryDataTable.CREATE_DATE_TIME)));
+                historyData.setContent(cursor.getString(cursor.getColumnIndexOrThrow(HistoryDataDBHelper.HistoryDataTable.CONTENT)));
+                historyDatas.add(0, historyData);
+            }
         }
         if (cursor != null) {
             cursor.close();
         }
+        historyDataDBHelper.close();
         return historyDatas;
     }
 

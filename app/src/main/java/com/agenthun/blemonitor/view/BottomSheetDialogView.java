@@ -13,6 +13,7 @@ import android.widget.ImageView;
 import com.agenthun.blemonitor.App;
 import com.agenthun.blemonitor.R;
 import com.agenthun.blemonitor.bean.base.Detail;
+import com.agenthun.blemonitor.bean.base.HistoryData;
 
 import java.util.List;
 
@@ -22,9 +23,9 @@ import java.util.List;
  * @date 16/3/8 上午12:26.
  */
 public class BottomSheetDialogView {
-    private static List<Detail> details;
+    private static List<HistoryData> details;
 
-    public BottomSheetDialogView(Context context, List<Detail> details) {
+    public BottomSheetDialogView(Context context, List<HistoryData> details) {
         BottomSheetDialogView.details = details;
 
         BottomSheetDialog dialog = new BottomSheetDialog(context);
@@ -38,7 +39,7 @@ public class BottomSheetDialogView {
         dialog.show();
     }
 
-    public static void show(Context context, List<Detail> details) {
+    public static void show(Context context, List<HistoryData> details) {
         new BottomSheetDialogView(context, details);
     }
 
@@ -104,7 +105,7 @@ public class BottomSheetDialogView {
             if (actionType < 4) {
                 holder.actionTypeTextView.setText(getActionType(actionType));
             } else {
-                holder.actionTypeTextView.setText(details.get(position).getFreightName());
+                holder.actionTypeTextView.setText(details.get(position).getContent());
             }
         }
 

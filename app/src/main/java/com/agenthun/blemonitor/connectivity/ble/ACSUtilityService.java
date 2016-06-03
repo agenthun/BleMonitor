@@ -65,16 +65,15 @@ public class ACSUtilityService extends Service {
     public final static int EVENT_DATA_SEND_FAILED = 9;
     public final static int EVENT_OPEN_PORT_FAILED = 10;
 
-    public final static String EXTRA_DATA =
-            "EXTRA_DATA";
+    public final static String EXTRA_DATA = "EXTRA_DATA";
     //public final static int EXTRA_DATA = 100;
 
-    public final static UUID ACS_SERVICE_UUID = UUID.fromString("0000FFB0-0000-1000-8000-00805f9b34fb");
-    private final UUID CMD_LINE_UUID = UUID.fromString("0000FFB1-0000-1000-8000-00805f9b34fb");
-    private final UUID DATA_LINE_UUID = UUID.fromString("0000FFB2-0000-1000-8000-00805f9b34fb");
-    //    public final static UUID ACS_SERVICE_UUID = UUID.fromString("0000FFE0-0000-1000-8000-00805f9b34fb"); //now
-//    private final UUID CMD_LINE_UUID = UUID.fromString("0000FFE1-0000-1000-8000-00805f9b34fb");
-//    private final UUID DATA_LINE_UUID = UUID.fromString("0000FFE1-0000-1000-8000-00805f9b34fb"); //now
+    //    public final static UUID ACS_SERVICE_UUID = UUID.fromString("0000FFB0-0000-1000-8000-00805f9b34fb");
+//    private final UUID CMD_LINE_UUID = UUID.fromString("0000FFB1-0000-1000-8000-00805f9b34fb");
+//    private final UUID DATA_LINE_UUID = UUID.fromString("0000FFB2-0000-1000-8000-00805f9b34fb");
+    public final static UUID ACS_SERVICE_UUID = UUID.fromString("0000FFE0-0000-1000-8000-00805f9b34fb"); //now
+    private final UUID CMD_LINE_UUID = UUID.fromString("0000FFE1-0000-1000-8000-00805f9b34fb");
+    private final UUID DATA_LINE_UUID = UUID.fromString("0000FFE1-0000-1000-8000-00805f9b34fb"); //now
     //private  final UUID NOTIFICATION_DESCRIPTOR_UUID = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb");
     public static final UUID CCC = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb");
 
