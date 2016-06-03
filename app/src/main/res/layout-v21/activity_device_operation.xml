@@ -40,4 +40,14 @@
         app:layout_anchor="@id/textViewLayout"
         app:layout_anchorGravity="top|end" />
 
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/queryFab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/fab_margin"
+        android:src="@drawable/ic_expand_less_black_24dp"
+        android:tint="@color/white"
+        app:backgroundTint="@color/colorAccentDark"
+        app:layout_anchor="@id/textViewLayout"
+        app:layout_anchorGravity="bottom|center" />
 </android.support.design.widget.CoordinatorLayout>

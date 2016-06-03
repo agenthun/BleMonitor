@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -25,17 +26,22 @@ import com.agenthun.blemonitor.connectivity.ble.ACSUtility;
 import com.agenthun.blemonitor.model.protocol.ESealOperation;
 import com.agenthun.blemonitor.model.utils.SocketPackage;
 import com.agenthun.blemonitor.model.utils.StateExtraType;
+import com.agenthun.blemonitor.view.BottomSheetDialogView;
 import com.agenthun.blemonitor.view.CheckableFab;
 
 import java.nio.ByteBuffer;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * @project ESeal
@@ -206,6 +212,12 @@ public class DeviceOperationActivity extends AppCompatActivity {
         sendData(smgData);
 
         adjustFab(false);
+    }
+
+    @OnClick(R.id.queryFab)
+    public void onQueryHistoryBtnClick() {
+        Log.d(TAG, "onQueryHistoryBtnClick() returned: ");
+        showDataListByBottomSheet();
     }
 
 /*    @OnClick(R.id.card_seting)
@@ -493,5 +505,10 @@ public class DeviceOperationActivity extends AppCompatActivity {
 
     private void sendData(byte[] data) {
         utility.writePort(data);
+    }
+
+    private void showDataListByBottomSheet(String token, String containerId, final String containerNo) {
+        List<Detail> details = response.body().getDetails();
+        BottomSheetDialogView.show(DeviceOperationActivity.this, containerNo, details);
     }
 }

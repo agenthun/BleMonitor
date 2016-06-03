@@ -24,15 +24,11 @@ import java.util.List;
 public class BottomSheetDialogView {
     private static List<Detail> details;
 
-    public BottomSheetDialogView(Context context, String containerNo, List<Detail> details) {
+    public BottomSheetDialogView(Context context, List<Detail> details) {
         BottomSheetDialogView.details = details;
 
         BottomSheetDialog dialog = new BottomSheetDialog(context);
-//        dialog.getDelegate().setLocalNightMode();
         View view = LayoutInflater.from(context).inflate(R.layout.bottom_sheet_dialog_recycler_view, null);
-
-        AppCompatTextView textView = (AppCompatTextView) view.findViewById(R.id.bottom_sheet_title);
-        textView.setText(context.getString(R.string.text_container_no) + containerNo);
 
         RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.bottom_sheet_recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(context));
@@ -42,8 +38,8 @@ public class BottomSheetDialogView {
         dialog.show();
     }
 
-    public static void show(Context context, String containerNo, List<Detail> details) {
-        new BottomSheetDialogView(context, containerNo, details);
+    public static void show(Context context, List<Detail> details) {
+        new BottomSheetDialogView(context, details);
     }
 
     private static class ViewHolder extends RecyclerView.ViewHolder {
@@ -63,55 +59,53 @@ public class BottomSheetDialogView {
         @Override
         public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-            View view = inflater.inflate(R.layout.list_item_freight_track, null);
+            View view = inflater.inflate(R.layout.list_item_history, null);
             return new ViewHolder(view);
         }
 
         @Override
         public void onBindViewHolder(ViewHolder holder, int position) {
-            String actionType = details.get(position).getActionType();
-/*            switch (details.get(position).getSecurityLevel()) {
-                case "0":
-                    holder.securityLevelImageView.setImageResource(R.drawable.ic_warning_black_24dp);
-                    holder.securityLevelImageView.setColorFilter(
-                            App.getContext().getResources().getColor(R.color.orange_500));
-                    break;
-                case "1":
-                    holder.securityLevelImageView.setImageResource(R.drawable.ic_lock_black_24dp);
-                    if (actionType == "2") {
-                        //非法拆封
-                        holder.securityLevelImageView.setColorFilter(
-                                App.getContext().getResources().getColor(R.color.dark_gray));
-                    } else {
-                        holder.securityLevelImageView.setColorFilter(
-                                App.getContext().getResources().getColor(R.color.dark_gray));
-                    }
-                    break;
-            }*/
+            Integer actionType = details.get(position).getActionType();
             switch (actionType) {
-                case "0":
+                case 0:
                     holder.securityLevelImageView.setImageResource(R.drawable.ic_lock_open_black_24dp);
                     holder.securityLevelImageView.setColorFilter(
-                            App.getContext().getResources().getColor(R.color.dark_gray));
+                            App.getContext().getResources().getColor(R.color.colorAccentDark));
                     break;
-                case "1":
-                    holder.securityLevelImageView.setImageResource(R.drawable.ic_lock_black_24dp);
-                    holder.securityLevelImageView.setColorFilter(
-                            App.getContext().getResources().getColor(R.color.dark_gray));
-                    break;
-                case "2":
+                case 1:
                     holder.securityLevelImageView.setImageResource(R.drawable.ic_warning_black_24dp);
                     holder.securityLevelImageView.setColorFilter(
                             App.getContext().getResources().getColor(R.color.red_500));
                     break;
-                case "3":
-                    holder.securityLevelImageView.setImageResource(R.drawable.ic_lock_black_24dp);
+                case 2:
+                    holder.securityLevelImageView.setImageResource(R.drawable.ic_warning_black_24dp);
                     holder.securityLevelImageView.setColorFilter(
-                            App.getContext().getResources().getColor(R.color.colorPrimary));
+                            App.getContext().getResources().getColor(R.color.light_blue_700));
+                    break;
+                case 3:
+                    holder.securityLevelImageView.setImageResource(R.drawable.ic_warning_black_24dp);
+                    holder.securityLevelImageView.setColorFilter(
+                            App.getContext().getResources().getColor(R.color.indigo_400));
+                    break;
+                case 4:
+                    //发送信息
+                    holder.securityLevelImageView.setImageResource(R.drawable.ic_send_black_24dp);
+                    holder.securityLevelImageView.setColorFilter(
+                            App.getContext().getResources().getColor(R.color.colorAccent));
+                    break;
+                case 5:
+                    //接收信息
+                    holder.securityLevelImageView.setImageResource(R.drawable.ic_message_black_24dp);
+                    holder.securityLevelImageView.setColorFilter(
+                            App.getContext().getResources().getColor(R.color.dark_gray));
                     break;
             }
             holder.timeTextView.setText(details.get(position).getCreateDatetime());
-            holder.actionTypeTextView.setText(getActionType(actionType));
+            if (actionType < 4) {
+                holder.actionTypeTextView.setText(getActionType(actionType));
+            } else {
+                holder.actionTypeTextView.setText(details.get(position).getFreightName());
+            }
         }
 
         @Override
@@ -120,18 +114,16 @@ public class BottomSheetDialogView {
         }
 
         //获取相应的ActionType
-        private String getActionType(String actionType) {
+        private String getActionType(Integer actionType) {
             switch (actionType) {
-                case "0":
+                case 0:
                     return App.getContext().getString(R.string.action_type_0);
-                case "1":
+                case 1:
                     return App.getContext().getString(R.string.action_type_1);
-                case "2":
+                case 2:
                     return App.getContext().getString(R.string.action_type_2);
-                case "3":
+                case 3:
                     return App.getContext().getString(R.string.action_type_3);
-                case "4":
-                    return App.getContext().getString(R.string.action_type_4);
             }
             return "";
         }
