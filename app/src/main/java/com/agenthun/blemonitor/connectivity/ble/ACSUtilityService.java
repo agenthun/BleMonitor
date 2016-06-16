@@ -65,7 +65,8 @@ public class ACSUtilityService extends Service {
     public final static int EVENT_DATA_SEND_FAILED = 9;
     public final static int EVENT_OPEN_PORT_FAILED = 10;
 
-    public final static String EXTRA_DATA = "EXTRA_DATA";
+    public final static String EXTRA_DATA =
+            "EXTRA_DATA";
     //public final static int EXTRA_DATA = 100;
 
     /*        public final static UUID ACS_SERVICE_UUID = UUID.fromString("0000FFB0-0000-1000-8000-00805f9b34fb");

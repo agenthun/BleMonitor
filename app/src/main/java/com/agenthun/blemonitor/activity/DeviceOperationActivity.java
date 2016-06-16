@@ -99,7 +99,7 @@ public class DeviceOperationActivity extends AppCompatActivity {
     private Handler mHandler = new Handler();
     private Runnable mHideFabRunnable;
     private boolean mEdited = false;
-    private boolean isChanged = false;
+    private boolean isReconnect = false;
 
     private int id = 0x12345678;
     private int rn = 0xABABABAB;
@@ -185,7 +185,7 @@ public class DeviceOperationActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-//        utilEnable = false;
+        utilEnable = false;
     }
 
     private void adjustFab(final boolean settingCorrect) {
@@ -366,6 +366,7 @@ public class DeviceOperationActivity extends AppCompatActivity {
         @Override
         public void utilReadyForUse() {
             Log.d(TAG, "utilReadyForUse() returned:");
+            isReconnect = false;
             utilEnable = true;
             utility.openPort(mCurrentPort);
 
@@ -401,29 +402,51 @@ public class DeviceOperationActivity extends AppCompatActivity {
         @Override
         public void didOpenPort(final ACSUtility.blePort port, Boolean bSuccess) {
             Log.d(TAG, "didOpenPort() returned: " + bSuccess);
-            AlertDialog.Builder builder = new AlertDialog.Builder(DeviceOperationActivity.this);
             isPortOpen = bSuccess;
-            if (bSuccess) {
-                getProgressDialog().cancel();
-                builder.setTitle(port._device.getName())
-                        .setMessage(R.string.success_device_connection)
-                        .setPositiveButton(R.string.text_ok, null).show();
+            if (!isReconnect) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(DeviceOperationActivity.this);
+                if (bSuccess) {
+                    getProgressDialog().cancel();
+                    builder.setTitle(port._device.getName())
+                            .setMessage(R.string.success_device_connection)
+                            .setPositiveButton(R.string.text_ok, null).show();
+                } else {
+                    getProgressDialog().cancel();
+                    builder.setTitle(port._device.getName())
+                            .setMessage(R.string.fail_device_connection)
+                            .setPositiveButton(R.string.text_ok, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    onBackPressed();
+                                }
+                            }).show();
+                }
             } else {
-                getProgressDialog().cancel();
-                builder.setTitle(port._device.getName())
-                        .setMessage(R.string.fail_device_connection)
-                        .setPositiveButton(R.string.text_ok, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                onBackPressed();
-                            }
-                        }).show();
+                //尝试重新连接
+                if (bSuccess) {
+                    Snackbar.make(fab, getString(R.string.success_device_reconnection), Snackbar.LENGTH_SHORT)
+                            .setAction("Action", null).show();
+                } else {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(DeviceOperationActivity.this);
+                    builder.setTitle(port._device.getName())
+                            .setMessage(R.string.fail_device_connection)
+                            .setPositiveButton(R.string.text_ok, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    onBackPressed();
+                                }
+                            }).show();
+                }
             }
         }
 
         @Override
         public void didClosePort(ACSUtility.blePort port) {
             Log.d(TAG, "didClosePort() returned: " + port._device.getAddress());
+            isReconnect = true;
+            utilEnable = true;
+            utility.openPort(port);
+            Log.d(TAG, "didClosePort() returned: trying to reconnect");
         }
 
         @Override

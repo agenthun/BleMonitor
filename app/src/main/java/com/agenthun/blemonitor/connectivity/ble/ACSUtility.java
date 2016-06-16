@@ -220,7 +220,7 @@ public class ACSUtility extends Object {
                 // Log.d(tag, "found same ACS Module");
                 //} else {
                 if (ports == null) {
-                    ports = new ArrayList<ACSUtility.blePort>();
+                    ports = new ArrayList<blePort>();
                 }
 
                 // 添加新端口

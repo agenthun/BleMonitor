@@ -163,6 +163,7 @@ public class ScanDeviceFragment extends Fragment implements SwipeRefreshLayout.O
             utilEnable = false;
             utility.stopEnum();
             utility.closeACSUtility();
+            Log.d(TAG, "onDestroyView: closeACSUtility");
         }
         super.onDestroyView();
     }
