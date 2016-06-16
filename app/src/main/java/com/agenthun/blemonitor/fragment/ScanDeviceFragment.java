@@ -136,6 +136,7 @@ public class ScanDeviceFragment extends Fragment implements SwipeRefreshLayout.O
                 mSelectedPort = utility.new blePort(device);
                 if (mSelectedPort != null) {
                     utilEnable = false;
+                    utility.stopEnum();
                     utility.closeACSUtility();
 
                     Bundle b = new Bundle();
@@ -157,6 +158,7 @@ public class ScanDeviceFragment extends Fragment implements SwipeRefreshLayout.O
 
     @Override
     public void onDestroyView() {
+        Log.d(TAG, "onDestroyView: ");
         if (utilEnable) {
             utilEnable = false;
             utility.stopEnum();
@@ -214,9 +216,12 @@ public class ScanDeviceFragment extends Fragment implements SwipeRefreshLayout.O
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                utilIsScan = false;
-                swipeRefreshLayout.setRefreshing(false);
-                utility.stopEnum();
+                if (utilEnable) {
+                    utilEnable = false;
+                    utilIsScan = false;
+                    swipeRefreshLayout.setRefreshing(false);
+                    utility.stopEnum();
+                }
             }
         }, SCAN_PERIOD);
     }

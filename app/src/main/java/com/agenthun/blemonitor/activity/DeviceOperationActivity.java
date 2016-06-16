@@ -185,7 +185,7 @@ public class DeviceOperationActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        utilEnable = false;
+//        utilEnable = false;
     }
 
     private void adjustFab(final boolean settingCorrect) {
