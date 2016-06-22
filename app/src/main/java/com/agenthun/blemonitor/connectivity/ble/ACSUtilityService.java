@@ -68,12 +68,13 @@ public class ACSUtilityService extends Service {
     public final static String EXTRA_DATA =
             "EXTRA_DATA";
     //public final static int EXTRA_DATA = 100;
-    public final static UUID ACS_SERVICE_UUID = UUID.fromString("0000FFB0-0000-1000-8000-00805f9b34fb");
-    private final UUID CMD_LINE_UUID = UUID.fromString("0000FFB1-0000-1000-8000-00805f9b34fb");
-    private final UUID DATA_LINE_UUID = UUID.fromString("0000FFB2-0000-1000-8000-00805f9b34fb");
-    /*    public final static UUID ACS_SERVICE_UUID = UUID.fromString("0000FFE0-0000-1000-8000-00805f9b34fb"); //now
-        private final UUID CMD_LINE_UUID = UUID.fromString("0000FFE1-0000-1000-8000-00805f9b34fb");
-        private final UUID DATA_LINE_UUID = UUID.fromString("0000FFE1-0000-1000-8000-00805f9b34fb"); //now*/
+    private boolean isJin = false;
+    public static UUID ACS_SERVICE_UUID = UUID.fromString("0000FFB0-0000-1000-8000-00805f9b34fb");
+    private UUID CMD_LINE_UUID = UUID.fromString("0000FFB1-0000-1000-8000-00805f9b34fb");
+    private UUID DATA_LINE_UUID = UUID.fromString("0000FFB2-0000-1000-8000-00805f9b34fb");
+    public final static UUID ACS_SERVICE_UUID_JIN = UUID.fromString("0000FFE0-0000-1000-8000-00805f9b34fb"); //now
+    private final UUID CMD_LINE_UUID_JIN = UUID.fromString("0000FFE1-0000-1000-8000-00805f9b34fb");
+    private final UUID DATA_LINE_UUID_JIN = UUID.fromString("0000FFE1-0000-1000-8000-00805f9b34fb"); //now
     //private  final UUID NOTIFICATION_DESCRIPTOR_UUID = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb");
     public static final UUID CCC = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb");
 
@@ -167,9 +168,22 @@ public class ACSUtilityService extends Service {
             //broadcastUpdate(ACTION_GATT_SERVICES_DISCOVERED);
             LogCat.i(TAG, "Starting enable DATA Line Notificaiton");
             //setACSNotification(DATA_LINE_UUID);
-            if (status == BluetoothGatt.GATT_SUCCESS)
+            if (status == BluetoothGatt.GATT_SUCCESS) {
+                //switch ble device
+                BluetoothGattService gattService = gatt.getService(ACS_SERVICE_UUID);
+                if (gattService == null) {
+                    gattService = gatt.getService(ACS_SERVICE_UUID_JIN);
+                    if (gattService == null) {
+                        Log.d(TAG, "gattService is not available");
+                    } else {
+                        ACS_SERVICE_UUID = ACS_SERVICE_UUID_JIN;
+                        CMD_LINE_UUID = CMD_LINE_UUID_JIN;
+                        DATA_LINE_UUID = DATA_LINE_UUID_JIN;
+                    }
+                }
+
                 setACSNotification(CMD_LINE_UUID);
-            else {
+            } else {
                 Message msg = mCurrentEventHandler.obtainMessage(EVENT_OPEN_PORT_FAILED);
                 msg.sendToTarget();
             }
