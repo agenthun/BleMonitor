@@ -160,7 +160,6 @@ public class MainActivity extends AppCompatActivity
                         public void onClick(DialogInterface dialog, int which) {
                             Log.d(TAG, "AlertDialog ble not supported");
                             finish();
-                            return;
                         }
                     }).show();
         }
