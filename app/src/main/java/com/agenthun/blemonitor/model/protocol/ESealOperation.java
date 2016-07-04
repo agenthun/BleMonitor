@@ -1,5 +1,7 @@
 package com.agenthun.blemonitor.model.protocol;
 
+import android.text.TextUtils;
+
 import com.agenthun.blemonitor.model.utils.Crc;
 import com.agenthun.blemonitor.model.utils.Encrypt;
 import com.agenthun.blemonitor.model.utils.PositionType;
@@ -353,14 +355,22 @@ public class ESealOperation {
         short shakeZ = (short) (buffer.getShort(ESEALBD_PROTOCOL_CMD_EXTRA_DATA_OFFSET + 13) >> 0);
 
         byte[] message = new byte[32];
+        boolean isValid = false;
         for (int i = 0; i < 32 && i < (buffer.capacity() - 15); i++) {
             message[i] = buffer.get(ESEALBD_PROTOCOL_CMD_EXTRA_DATA_OFFSET + 15 + i);
+            if ((message[i] & 0xff) != 0) {
+                isValid = true;
+            }
         }
 
         try {
-            String smsMessage = new String(message, "unicode");
+            if (isValid) {
+                String smsMessage = new String(message, "unicode");
 //            String smsMessage = new String(message, "gbk");
-            stateExtraType.setSmsMessage(smsMessage);
+                stateExtraType.setSmsMessage(smsMessage);
+            } else {
+                stateExtraType.setSmsMessage("");
+            }
         } catch (Exception e) {
             stateExtraType.setSmsMessage("msg error");
         }

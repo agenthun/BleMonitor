@@ -14,11 +14,17 @@ android {
     defaultConfig {
         applicationId "com.agenthun.blemonitor"
         minSdkVersion 18
-        targetSdkVersion 24
+        targetSdkVersion 21
         versionCode 1
         versionName "1.0"
     }
     buildTypes {
+        debug {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            zipAlignEnabled true
+            shrinkResources true
+        }
         release {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
@@ -30,6 +36,8 @@ android {
     repositories {
         maven { url 'http://jsoup.org' }
         maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+    }
+    productFlavors {
     }
 }
 

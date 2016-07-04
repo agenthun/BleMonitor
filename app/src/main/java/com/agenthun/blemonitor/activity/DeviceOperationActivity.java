@@ -517,7 +517,6 @@ public class DeviceOperationActivity extends AppCompatActivity {
 //                textShakeX.setText(Integer.toHexString(stateExtraType.getShakeX()));
 //                textShakeY.setText(Integer.toHexString(stateExtraType.getShakeY()));
 //                textShakeZ.setText(Integer.toHexString(stateExtraType.getShakeZ()));
-
                 if (!TextUtils.isEmpty(stateExtraType.getSmsMessage())
                         && !TextUtils.equals(textSmsMessage.getText(), stateExtraType.getSmsMessage())) {
                     historyDataDBUtil.insertData(new HistoryData(ACTION_TYPE_RECEIVE_MESSAGE, textCurrentTime.getText().toString(), stateExtraType.getSmsMessage()));
@@ -558,15 +557,32 @@ public class DeviceOperationActivity extends AppCompatActivity {
 
                 if (!isFastShow) {
                     isFastShow = true;
+                    boolean isNotifyDialog = false;
+                    StringBuilder msg = new StringBuilder();
+
                     if (!stateExtraType.isLocked()) {
+//                        isNotifyDialog = true;
+
                         historyDataDBUtil.insertData(new HistoryData(ACTION_TYPE_UNLOCK, textCurrentTime.getText().toString(), ""));
                         Log.d(TAG, "historyDataDBUtil insertData: " + historyDataDBUtil.getDatas().get(0).toString());
                     }
                     if (stateExtraType.getShakeX() >= SHAKE_ALARM
                             || stateExtraType.getShakeY() >= SHAKE_ALARM
                             || stateExtraType.getShakeZ() >= SHAKE_ALARM) {
+                        isNotifyDialog = true;
+                        msg.append("振动量超标");
+
                         historyDataDBUtil.insertData(new HistoryData(ACTION_TYPE_SHAKE, textCurrentTime.getText().toString(), ""));
                         Log.d(TAG, "historyDataDBUtil insertData: " + historyDataDBUtil.getDatas().get(0).toString());
+                    }
+
+                    if (isNotifyDialog) {
+                        isNotifyDialog = false;
+
+                        AlertDialog.Builder builder = new AlertDialog.Builder(DeviceOperationActivity.this);
+                        builder.setTitle(getResources().getString(R.string.device_alarm_title))
+                                .setMessage(msg.toString())
+                                .setPositiveButton(R.string.text_ok, null).show();
                     }
 
                     //5 minutes
@@ -597,7 +613,7 @@ public class DeviceOperationActivity extends AppCompatActivity {
         if (mProgressDialog != null) {
             return mProgressDialog;
         }
-        mProgressDialog = new AppCompatDialog(DeviceOperationActivity.this, AppCompatDelegate.MODE_NIGHT_AUTO);
+        mProgressDialog = new AppCompatDialog(DeviceOperationActivity.this);
         mProgressDialog.setCanceledOnTouchOutside(false);
         mProgressDialog.setContentView(R.layout.dialog_device_connecting);
         mProgressDialog.setTitle(getResources().getString(R.string.device_connecting));
