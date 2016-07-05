@@ -228,8 +228,14 @@ public class DeviceOperationActivity extends AppCompatActivity {
         }
 
         String smg = smsEditMessage.getText().toString().trim();
-        byte[] smgData = ESealOperation.operationSendSmgData(smg, (short) (smg.length() << 1));
-        sendData(smgData);
+
+        if (smg.length() < 15) {
+            byte[] smgData = ESealOperation.operationSendSmgData(smg, (short) (smg.length() << 1));
+            sendData(smgData);
+        } else if (smg.length() >= 15) {
+            Snackbar.make(fab, getString(R.string.fail_device_send_data_overlength), Snackbar.LENGTH_SHORT)
+                    .setAction("Action", null).show();
+        }
 
         adjustFab(false);
     }
