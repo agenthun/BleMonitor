@@ -51,7 +51,7 @@ public class DeviceOperationActivity extends AppCompatActivity {
 
     private static final int DEVICE_SETTING = 1;
     private static final long TIME_OUT = 30000;
-    private static final short SHAKE_ALARM = 125;
+    private static final short SHAKE_ALARM = 200;
 
     private static final int ACTION_TYPE_UNLOCK = 0;
     private static final int ACTION_TYPE_TEMPERATURE = 1;
@@ -229,15 +229,14 @@ public class DeviceOperationActivity extends AppCompatActivity {
 
         String smg = smsEditMessage.getText().toString().trim();
 
-        if (smg.length() < 15) {
+        if (smg.length() <= 15) {
             byte[] smgData = ESealOperation.operationSendSmgData(smg, (short) (smg.length() << 1));
             sendData(smgData);
-        } else if (smg.length() >= 15) {
+            adjustFab(false);
+        } else if (smg.length() > 15) {
             Snackbar.make(fab, getString(R.string.fail_device_send_data_overlength), Snackbar.LENGTH_SHORT)
                     .setAction("Action", null).show();
         }
-
-        adjustFab(false);
     }
 
     @OnClick(R.id.queryFab)
