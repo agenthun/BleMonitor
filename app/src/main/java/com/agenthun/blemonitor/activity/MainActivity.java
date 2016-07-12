@@ -153,6 +153,7 @@ public class MainActivity extends AppCompatActivity
 
         if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setCancelable(false);
             builder.setTitle(getResources().getString(R.string.device_alarm_title))
                     .setMessage(R.string.error_ble_not_supported)
                     .setPositiveButton(R.string.text_ok, new DialogInterface.OnClickListener() {
@@ -168,6 +169,7 @@ public class MainActivity extends AppCompatActivity
         BluetoothAdapter bluetoothAdapter = bluetoothManager.getAdapter();
         if (bluetoothAdapter == null) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setCancelable(false);
             builder.setTitle(getResources().getString(R.string.device_alarm_title))
                     .setMessage(R.string.error_ble_not_supported)
                     .setPositiveButton(R.string.text_ok, new DialogInterface.OnClickListener() {
