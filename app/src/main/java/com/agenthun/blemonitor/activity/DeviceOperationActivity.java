@@ -171,7 +171,7 @@ public class DeviceOperationActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
+//        super.onBackPressed();
         if (utilEnable) {
             utilEnable = false;
             utility.closePort();
