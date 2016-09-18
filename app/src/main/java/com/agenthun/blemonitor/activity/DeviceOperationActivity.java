@@ -52,7 +52,7 @@ public class DeviceOperationActivity extends AppCompatActivity {
 
     private static final int DEVICE_SETTING = 1;
     private static final long TIME_OUT = 30000;
-    private static final short SHAKE_ALARM = 200;
+    private static final short SHAKE_ALARM = 256 * 5; //振动量阈值
 
     private static final int ACTION_TYPE_UNLOCK = 0;
     private static final int ACTION_TYPE_TEMPERATURE = 1;
