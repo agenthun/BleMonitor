@@ -20,6 +20,9 @@
     <string name="page_title_scan_device">扫描设备</string>
     <string name="page_title_track">轨迹路线</string>
 
+    <string name="no_devices_all">未发现设备</string>
+    <string name="scan_device_active">请下拉刷新或点击右下角按钮扫描设备</string>
+
     <string name="text_hint_track_content">请输入轨迹内容</string>
     <string name="text_container_no">"箱号 "</string>
     <string name="menu_clear">关闭</string>

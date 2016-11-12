@@ -13,7 +13,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,6 +23,7 @@ import com.agenthun.blemonitor.activity.DeviceOperationActivity;
 import com.agenthun.blemonitor.activity.MainActivity;
 import com.agenthun.blemonitor.adapter.DeviceAdapter;
 import com.agenthun.blemonitor.connectivity.ble.ACSUtility;
+import com.agenthun.blemonitor.view.CheckEmptyRecyclerView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -49,7 +49,8 @@ public class ScanDeviceFragment extends Fragment implements SwipeRefreshLayout.O
     private String mContainerNo;
 
     private SwipeRefreshLayout swipeRefreshLayout;
-    private RecyclerView recyclerView;
+    private View noDevices;
+    private CheckEmptyRecyclerView recyclerView;
     private DeviceAdapter deviceAdapter;
 
     private BluetoothAdapter mBluetoothAdapter;
@@ -122,9 +123,11 @@ public class ScanDeviceFragment extends Fragment implements SwipeRefreshLayout.O
             }
         });
 
+        noDevices = view.findViewById(R.id.noDevices);
+
         deviceList = new ArrayList<>();
 
-        recyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
+        recyclerView = (CheckEmptyRecyclerView) view.findViewById(R.id.recyclerView);
         deviceAdapter = new DeviceAdapter(deviceList, deviceRssiValues);
         deviceAdapter.setOnItemClickListener(new DeviceAdapter.OnItemClickListener() {
             @Override
@@ -157,6 +160,7 @@ public class ScanDeviceFragment extends Fragment implements SwipeRefreshLayout.O
         recyclerView.setAdapter(deviceAdapter);
         recyclerView.setItemAnimator(new SlideScaleInOutRightItemAnimator(recyclerView));
 
+        recyclerView.setEmptyView(noDevices);
         return view;
     }
 

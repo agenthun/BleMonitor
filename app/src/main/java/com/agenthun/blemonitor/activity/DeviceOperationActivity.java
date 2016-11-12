@@ -9,6 +9,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.app.AppCompatDialog;
 import android.support.v7.widget.AppCompatEditText;
 import android.support.v7.widget.AppCompatTextView;
@@ -261,7 +262,9 @@ public class DeviceOperationActivity extends AppCompatActivity {
 
     protected void allowRecord(boolean enable) {
         if (enable) {
-            DataLogUtils.logToFileInit();
+            String time = new SimpleDateFormat("_yyyy-MM-dd_HH-mm-ss").format(Calendar.getInstance().getTime());
+            String name = "BleMonitorDataLog" + time + ".txt";
+            DataLogUtils.logToFileInit(name);
             isRecording = true;
             Log.d(TAG, "已开启本地保存功能");
         } else {
@@ -552,14 +555,14 @@ public class DeviceOperationActivity extends AppCompatActivity {
 
                 if (isRecording) {
                     StringBuilder sb = new StringBuilder();
-                    sb.append(textTemperature.getText() + " ");
+                    sb.append(textCurrentTime.getText() + " ");
                     sb.append(location + " ");
+                    sb.append(textTemperature.getText() + " ");
                     sb.append(textHumidity.getText() + " ");
                     sb.append(textlocked.getText() + " ");
                     sb.append(textShakeX.getText() + " ");
                     sb.append(textShakeY.getText() + " ");
                     sb.append(textShakeZ.getText());
-                    Log.d(TAG, "location string=" + sb.toString());
                     DataLogUtils.logToFile(DataLogUtils.LOCATION_TYPE, sb.toString());
                 }
             }

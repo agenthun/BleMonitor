@@ -23,9 +23,9 @@ public class DataLogUtils {
     public static final String LOCATION_TYPE = "LOCATION_TYPE";
     static BufferedOutputStream outputStream;
 
-    public static void logToFileInit() {
+    public static void logToFileInit(String name) {
         File sdCard = Environment.getExternalStorageDirectory();
-        File logFile = new File(sdCard, DATA_LOG_FILE_NAME);
+        File logFile = new File(sdCard, name);
         try {
             outputStream = new BufferedOutputStream(new FileOutputStream(logFile));
         } catch (FileNotFoundException e) {
@@ -54,7 +54,6 @@ public class DataLogUtils {
         }
         StringBuilder sb = new StringBuilder(tag);
         sb.append(" " + data + "\n");
-        Log.d(TAG, "logData =" + sb.toString());
         try {
             outputStream.write(sb.toString().getBytes());
         } catch (IOException e) {
