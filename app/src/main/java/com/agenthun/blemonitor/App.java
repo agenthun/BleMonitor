@@ -10,7 +10,6 @@ import android.content.Context;
  */
 public class App extends Application {
     private static Context mApplicationContext;
-    private static String token;
 
     @Override
     public void onCreate() {
@@ -25,13 +24,5 @@ public class App extends Application {
 
     public static Context getContext() {
         return mApplicationContext;
-    }
-
-    public static String getToken() {
-        return token;
-    }
-
-    public static void setToken(String token) {
-        App.token = token;
     }
 }

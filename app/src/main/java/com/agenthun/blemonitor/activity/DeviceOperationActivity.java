@@ -9,7 +9,6 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.app.AppCompatDialog;
 import android.support.v7.widget.AppCompatEditText;
 import android.support.v7.widget.AppCompatTextView;
@@ -24,8 +23,8 @@ import android.view.View;
 import android.view.WindowManager;
 
 import com.agenthun.blemonitor.R;
-import com.agenthun.blemonitor.bean.base.HistoryData;
-import com.agenthun.blemonitor.bean.base.HistoryDataDBUtil;
+import com.agenthun.blemonitor.bean.HistoryData;
+import com.agenthun.blemonitor.bean.HistoryDataDBUtil;
 import com.agenthun.blemonitor.connectivity.ble.ACSUtility;
 import com.agenthun.blemonitor.model.protocol.ESealOperation;
 import com.agenthun.blemonitor.model.utils.LocationType;

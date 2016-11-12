@@ -40,13 +40,8 @@ import it.gmariotti.recyclerview.itemanimator.SlideScaleInOutRightItemAnimator;
 public class ScanDeviceFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
 
     private static final String TAG = "ScanDeviceFragment";
-    private static final String ARG_TYPE = "TYPE";
-    private static final String ARG_CONTAINER_NO = "CONTAINER_NO";
     private static final int REQUEST_ENABLE_BT = 1;
     private static final long SCAN_PERIOD = 10000;
-
-    private String mType;
-    private String mContainerNo;
 
     private SwipeRefreshLayout swipeRefreshLayout;
     private View noDevices;
@@ -62,22 +57,14 @@ public class ScanDeviceFragment extends Fragment implements SwipeRefreshLayout.O
     private boolean utilEnable = false;
     private boolean utilIsScan = false;
 
-    public static ScanDeviceFragment newInstance(String type, String containerNo) {
-        Bundle args = new Bundle();
-        args.putString(ARG_TYPE, type);
-        args.putString(ARG_CONTAINER_NO, containerNo);
+    public static ScanDeviceFragment newInstance() {
         ScanDeviceFragment fragment = new ScanDeviceFragment();
-        fragment.setArguments(args);
         return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mType = getArguments().getString(ARG_TYPE);
-            mContainerNo = getArguments().getString(ARG_CONTAINER_NO);
-        }
     }
 
     @Nullable
@@ -95,14 +82,6 @@ public class ScanDeviceFragment extends Fragment implements SwipeRefreshLayout.O
                 ContextCompat.getColor(getActivity(), R.color.colorAccent),
                 ContextCompat.getColor(getActivity(), R.color.colorPrimaryDark)
         );
-
-/*        swipeRefreshLayout.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                swipeRefreshLayout.setRefreshing(true);
-            }
-        }, 1000);
-        onRefresh();*/
 
         ((MainActivity) getActivity()).setOnItemClickListener(new MainActivity.OnFABClickListener() {
             @Override

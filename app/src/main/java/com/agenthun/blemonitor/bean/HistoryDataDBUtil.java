@@ -1,4 +1,4 @@
-package com.agenthun.blemonitor.bean.base;
+package com.agenthun.blemonitor.bean;
 
 import android.content.ContentValues;
 import android.content.Context;

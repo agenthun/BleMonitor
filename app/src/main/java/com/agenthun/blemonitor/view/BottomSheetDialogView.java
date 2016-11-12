@@ -12,8 +12,7 @@ import android.widget.ImageView;
 
 import com.agenthun.blemonitor.App;
 import com.agenthun.blemonitor.R;
-import com.agenthun.blemonitor.bean.base.Detail;
-import com.agenthun.blemonitor.bean.base.HistoryData;
+import com.agenthun.blemonitor.bean.HistoryData;
 
 import java.util.List;
 
@@ -98,7 +97,7 @@ public class BottomSheetDialogView {
                     //接收信息
                     holder.securityLevelImageView.setImageResource(R.drawable.ic_message_black_24dp);
                     holder.securityLevelImageView.setColorFilter(
-                            App.getContext().getResources().getColor(R.color.dark_gray));
+                            App.getContext().getResources().getColor(R.color.blue_grey_500));
                     break;
             }
             holder.timeTextView.setText(details.get(position).getCreateDatetime());
