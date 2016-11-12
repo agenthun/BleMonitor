@@ -39,7 +39,7 @@ android {
             // 不显示Log
             buildConfigField "boolean", "LOG_DEBUG", "false"
             //混淆
-            minifyEnabled false
+            minifyEnabled true
             //Zipalign优化
             zipAlignEnabled true
 
@@ -52,7 +52,6 @@ android {
         }
     }
     repositories {
-        maven { url 'http://jsoup.org' }
         maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
     }
     productFlavors {

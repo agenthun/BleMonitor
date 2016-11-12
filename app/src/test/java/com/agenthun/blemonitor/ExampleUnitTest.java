@@ -1,7 +1,5 @@
 package com.agenthun.blemonitor;
 
-import android.util.Log;
-
 import com.agenthun.blemonitor.model.protocol.ESealOperation;
 import com.agenthun.blemonitor.model.utils.LocationType;
 import com.agenthun.blemonitor.model.utils.SocketPackage;
@@ -15,7 +13,7 @@ import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.Queue;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 /**
  * To work on unit tests, switch the Test Artifact in the Build Variants view.
