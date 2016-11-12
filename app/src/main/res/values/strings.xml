@@ -5,6 +5,8 @@
     <string name="navigation_drawer_close">关闭导航抽屉</string>
 
     <string name="action_settings">设置</string>
+    <string name="action_record_start">开启本地保存</string>
+    <string name="action_record_stop">关闭本地保存</string>
 
     <string name="prompt_account">用户名</string>
     <string name="prompt_password">密码</string>

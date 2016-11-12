@@ -22,6 +22,9 @@ public class SocketPackage {
     private static final short SOCKET_HEAD_EXTRA_NO_DATA_SIZE = 4;
     private static final int SOCKET_EXTRA_COUNT = SOCKET_HEAD_EXTRA_NO_DATA_SIZE + 47;
 
+    private static final byte SOCKET_DATA_TYPE_NORMAL = 0x40;
+    private static final byte SOCKET_DATA_TYPE_LOCATION = 0x41;
+
     int flag;
     int count;
     boolean ok;
@@ -79,8 +82,18 @@ public class SocketPackage {
         return res;
     }
 
-    //接收北斗主板与操作面板通信协议数据帧
-    public int packageExtraReceive(SocketPackage socketPackage, byte[] pdata, Queue<ByteBuffer> queue) {
+    //接收北斗主板与操作面板通信协议数据帧: 接收数据
+    /*
+    pdata:
+        0x02, 0x31, 0x40, 0x16, 0x04, 0x14, 0x20, 0x00, 0x00, 0x12,
+        0x13, 0x01, 0x11, 0x00, 0x12, 0x00, 0x13, 0x00, 0x4E, 0x0B,
+        0x4E, 0x2A, 0x8D, 0xEF, 0x53, 0xE3, 0x53, 0xF3, 0x8F, 0x6C,
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+        0xDF
+    短信内容为“下个路口右转”，(UTF-8)
+     */
+    public int packageExtraReceive(SocketPackage socketPackage, byte[] pdata, Queue<ByteBuffer> dataQueue) {
         int res = 0;
         for (int i = 0; i < pdata.length; i++) {
             if ((pdata[i] == SOCKET_LEAD_EXTRA_BYTE) && (socketPackage.getFlag() == 0)) {
@@ -113,11 +126,72 @@ public class SocketPackage {
 //                        Log.d(TAG, "is OK");
                         ByteBuffer buffer = ByteBuffer.allocate(SOCKET_EXTRA_COUNT - SOCKET_HEAD_EXTRA_NO_DATA_SIZE);
                         buffer.put(socketPackage.getData(), SOCKET_HEAD_EXTRA_NO_DATA_SIZE - 1, SOCKET_EXTRA_COUNT - SOCKET_HEAD_EXTRA_NO_DATA_SIZE);
-                        queue.offer(buffer);
+                        dataQueue.offer(buffer);
                     }
                 }
 
                 if (socketPackage.getCount() >= SOCKET_EXTRA_COUNT - 1) {
+                    socketPackage.setFlag(0);
+                } else {
+                    socketPackage.setCount(socketPackage.getCount() + 1);
+                }
+            }
+        }
+        return res;
+    }
+
+    //接收北斗主板与操作面板通信协议数据帧: 接收数据, 位置信息
+    /*
+    pdata:
+        0x02, 0x31, 0x40, 0x16, 0x04, 0x14, 0x20, 0x00, 0x00, 0x12,
+        0x13, 0x01, 0x11, 0x00, 0x12, 0x00, 0x13, 0x00, 0x4E, 0x0B,
+        0x4E, 0x2A, 0x8D, 0xEF, 0x53, 0xE3, 0x53, 0xF3, 0x8F, 0x6C,
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+        0xDF
+
+    位置data:
+        0x02, 0x0C, 0x41, 0xDD, 0xA8, 0xD9, 0x01, 0x82, 0x6B, 0x3D, 0x07, 0x45, 0x4E, 0x70
+    短信内容为“下个路口右转”，(UTF-8)
+     */
+    public int packageExtraReceive(SocketPackage socketPackage, byte[] pdata, Queue<ByteBuffer> dataQueue, Queue<ByteBuffer> locationQueue) {
+        int res = 0;
+        for (int i = 0; i < pdata.length; i++) {
+            if ((pdata[i] == SOCKET_LEAD_EXTRA_BYTE) && (socketPackage.getFlag() == 0)) {
+                socketPackage.setFlag(1);
+                socketPackage.setCount(0);
+            } else {
+                if ((socketPackage.getFlag() != 0) && (socketPackage.getFlag() != 1)) {
+                    socketPackage.setFlag(0);
+                }
+            }
+
+            if (socketPackage.getFlag() == 1 && socketPackage.getCount() == 0 && i + 1 < pdata.length) {
+                int len = 2 + pdata[i + 1];
+                socketPackage.data = new byte[len];
+            }
+
+            if ((socketPackage.getFlag() == 1)) {
+                socketPackage.setData(socketPackage.getCount(), pdata[i]);
+
+                if (socketPackage.getCount() == socketPackage.getData().length - 1) {
+                    if ((pdata[i] & 0xff) != Crc.simpleSumCRC(socketPackage.getData(), socketPackage.getCount() + 1)) {
+                        socketPackage.setFlag(0);
+                        continue;
+                    } else {
+//                        Log.d(TAG, "is OK");
+                        byte[] data = socketPackage.getData();
+                        ByteBuffer buffer = ByteBuffer.allocate(data.length - SOCKET_HEAD_EXTRA_NO_DATA_SIZE);
+                        buffer.put(data, SOCKET_HEAD_EXTRA_NO_DATA_SIZE - 1, data.length - SOCKET_HEAD_EXTRA_NO_DATA_SIZE);
+                        if (data[2] == SOCKET_DATA_TYPE_NORMAL) {
+                            dataQueue.offer(buffer);
+                        } else if (data[2] == SOCKET_DATA_TYPE_LOCATION) {
+                            locationQueue.offer(buffer);
+                        }
+                    }
+                }
+
+                if (socketPackage.getCount() >= socketPackage.data.length - 1) {
                     socketPackage.setFlag(0);
                 } else {
                     socketPackage.setCount(socketPackage.getCount() + 1);

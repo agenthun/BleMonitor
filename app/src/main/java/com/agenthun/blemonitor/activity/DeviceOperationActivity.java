@@ -7,10 +7,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.app.AppCompatDialog;
 import android.support.v7.widget.AppCompatEditText;
 import android.support.v7.widget.AppCompatTextView;
@@ -19,6 +17,8 @@ import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 
@@ -27,8 +27,10 @@ import com.agenthun.blemonitor.bean.base.HistoryData;
 import com.agenthun.blemonitor.bean.base.HistoryDataDBUtil;
 import com.agenthun.blemonitor.connectivity.ble.ACSUtility;
 import com.agenthun.blemonitor.model.protocol.ESealOperation;
+import com.agenthun.blemonitor.model.utils.LocationType;
 import com.agenthun.blemonitor.model.utils.SocketPackage;
 import com.agenthun.blemonitor.model.utils.StateExtraType;
+import com.agenthun.blemonitor.utils.DataLogUtils;
 import com.agenthun.blemonitor.view.BottomSheetDialogView;
 import com.agenthun.blemonitor.view.CheckableFab;
 
@@ -68,6 +70,7 @@ public class DeviceOperationActivity extends AppCompatActivity {
 
     private boolean isSlowShow = false;
     private boolean isFastShow = false;
+    private boolean isRecording = false;
 
     private AppCompatDialog mProgressDialog;
 
@@ -165,6 +168,32 @@ public class DeviceOperationActivity extends AppCompatActivity {
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.activity_device_operation_menu, menu);
+        if (!isRecording) {
+            menu.findItem(R.id.menu_record_start).setVisible(true);
+            menu.findItem(R.id.menu_record_stop).setVisible(false);
+        } else {
+            menu.findItem(R.id.menu_record_start).setVisible(false);
+            menu.findItem(R.id.menu_record_stop).setVisible(true);
+        }
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_record_start:
+                allowRecord(true);
+                break;
+            case R.id.menu_record_stop:
+                allowRecord(false);
+                break;
+        }
+        return true;
+    }
+
+    @Override
     protected void onStart() {
         super.onStart();
         setupDatabase();
@@ -179,6 +208,12 @@ public class DeviceOperationActivity extends AppCompatActivity {
             isPortOpen = false;
             utility.closeACSUtility();
         }
+
+        //关闭文件保存
+        if (isRecording) {
+            allowRecord(false);
+        }
+
         startActivity(new Intent(this, MainActivity.class));
         finish();
     }
@@ -187,6 +222,11 @@ public class DeviceOperationActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         utilEnable = false;
+
+        //关闭文件保存
+        if (isRecording) {
+            allowRecord(false);
+        }
     }
 
     private void adjustFab(final boolean settingCorrect) {
@@ -217,6 +257,19 @@ public class DeviceOperationActivity extends AppCompatActivity {
 
     public boolean ismEdited() {
         return mEdited;
+    }
+
+    protected void allowRecord(boolean enable) {
+        if (enable) {
+            DataLogUtils.logToFileInit();
+            isRecording = true;
+            Log.d(TAG, "已开启本地保存功能");
+        } else {
+            DataLogUtils.logToFileFinish();
+            isRecording = false;
+            Log.d(TAG, "已关闭本地保存功能");
+        }
+        invalidateOptionsMenu();
     }
 
     @OnClick(R.id.fab)
@@ -250,123 +303,6 @@ public class DeviceOperationActivity extends AppCompatActivity {
                     .setAction("Action", null).show();
         }
     }
-
-/*    @OnClick(R.id.card_seting)
-    public void onSettingBtnClick() {
-        //配置信息
-        Intent intent = new Intent(DeviceOperationActivity.this, DeviceSettingActivity.class);
-        startActivityForResult(intent, DEVICE_SETTING);
-    }
-
-    @OnClick(R.id.card_lock)
-    public void onLockBtnClick() {
-        Log.d(TAG, "onLockBtnClick() returned: ");
-        //发送上封操作报文
-        ByteBuffer buffer = ByteBuffer.allocate(10 + ESealOperation.ESEALBD_OPERATION_REQUEST_SIZE_OPERATION);
-        buffer.putInt(id);
-        buffer.putInt(rn);
-        buffer.putShort(ESealOperation.ESEALBD_OPERATION_REQUEST_SIZE_OPERATION);
-        buffer.put(ESealOperation.operationOperation(id, rn, key,
-                ESealOperation.POWER_ON,
-                ESealOperation.SAFE_LOCK)
-        );
-
-        SocketPackage socketPackage = new SocketPackage();
-        byte[] data = socketPackage.packageAddHeader(ESealOperation.ESEALBD_OPERATION_PORT,
-                10 + ESealOperation.ESEALBD_OPERATION_REQUEST_SIZE_OPERATION,
-                buffer.array()
-        );
-        sendData(data);
-    }
-
-    @OnClick(R.id.card_unlock)
-    public void onUnlockBtnClick() {
-        Log.d(TAG, "onUnlockBtnClick() returned: ");
-        //发送解封操作报文
-        ByteBuffer buffer = ByteBuffer.allocate(10 + ESealOperation.ESEALBD_OPERATION_REQUEST_SIZE_OPERATION);
-        buffer.putInt(id);
-        buffer.putInt(rn);
-        buffer.putShort(ESealOperation.ESEALBD_OPERATION_REQUEST_SIZE_OPERATION);
-        buffer.put(ESealOperation.operationOperation(id, rn, key,
-                ESealOperation.POWER_ON,
-                ESealOperation.SAFE_UNLOCK)
-        );
-
-        SocketPackage socketPackage = new SocketPackage();
-        byte[] data = socketPackage.packageAddHeader(ESealOperation.ESEALBD_OPERATION_PORT,
-                10 + ESealOperation.ESEALBD_OPERATION_REQUEST_SIZE_OPERATION,
-                buffer.array()
-        );
-        sendData(data);
-    }
-
-    @OnClick(R.id.card_query_status)
-    public void onQueryStatusBtnClick() {
-        Log.d(TAG, "onQueryStatusBtnClick() returned: ");
-        //发送查询操作报文
-        ByteBuffer buffer = ByteBuffer.allocate(10 + ESealOperation.ESEALBD_OPERATION_REQUEST_SIZE_QUERY);
-        buffer.putInt(id);
-        buffer.putInt(rn);
-        buffer.putShort(ESealOperation.ESEALBD_OPERATION_REQUEST_SIZE_QUERY);
-        buffer.put(ESealOperation.operationQuery(id, rn, key));
-
-        SocketPackage socketPackage = new SocketPackage();
-        byte[] data = socketPackage.packageAddHeader(ESealOperation.ESEALBD_OPERATION_PORT,
-                10 + ESealOperation.ESEALBD_OPERATION_REQUEST_SIZE_QUERY,
-                buffer.array()
-        );
-        sendData(data);
-    }
-
-    @OnClick(R.id.card_query_info)
-    public void onQueryInfoBtnClick() {
-        Log.d(TAG, "onQueryInfoBtnClick() returned: ");
-        //发送位置请求信息操作报文
-        ByteBuffer buffer = ByteBuffer.allocate(10 + ESealOperation.ESEALBD_OPERATION_REQUEST_SIZE_INFO);
-        buffer.putInt(id);
-        buffer.putInt(rn);
-        buffer.putShort(ESealOperation.ESEALBD_OPERATION_REQUEST_SIZE_INFO);
-        buffer.put(ESealOperation.operationInfo(id, rn, key));
-
-        SocketPackage socketPackage = new SocketPackage();
-        byte[] data = socketPackage.packageAddHeader(ESealOperation.ESEALBD_OPERATION_PORT,
-                10 + ESealOperation.ESEALBD_OPERATION_REQUEST_SIZE_INFO,
-                buffer.array()
-        );
-        sendData(data);
-    }*/
-
-/*    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == DEVICE_SETTING && resultCode == RESULT_OK) {
-            DetailParcelable detail = data.getExtras().getParcelable(DetailParcelable.EXTRA_DEVICE);
-            Log.d(TAG, "onActivityResult() returned: " + detail.toString());
-
-            int period = ESealOperation.PERIOD_DEFAULT;
-            if (detail.getFrequency() != null && detail.getFrequency().length() != 0) {
-                period = Integer.parseInt(detail.getFrequency());
-            }
-            //发送配置操作报文
-            ByteBuffer buffer = ByteBuffer.allocate(10 + ESealOperation.ESEALBD_OPERATION_REQUEST_SIZE_CONFIG);
-            buffer.putInt(id);
-            buffer.putInt(rn);
-            buffer.putShort(ESealOperation.ESEALBD_OPERATION_REQUEST_SIZE_CONFIG);
-            buffer.put(ESealOperation.operationConfig(id, rn, key,
-                    period,
-                    ESealOperation.WINDOW_DEFAULT,
-                    ESealOperation.CHANNEL_DEFAULT,
-                    new SensorType())
-            );
-
-            SocketPackage socketPackage = new SocketPackage();
-            byte[] settingData = socketPackage.packageAddHeader(ESealOperation.ESEALBD_OPERATION_PORT,
-                    10 + ESealOperation.ESEALBD_OPERATION_REQUEST_SIZE_CONFIG,
-                    buffer.array()
-            );
-            sendData(settingData);
-        }
-    }*/
 
     private ACSUtility.IACSUtilityCallback callback = new ACSUtility.IACSUtilityCallback() {
         @Override
@@ -494,12 +430,12 @@ public class DeviceOperationActivity extends AppCompatActivity {
             }
             Log.d(TAG, sb.toString());*/
 
-            socketPackageReceived.packageExtraReceive(socketPackageReceived, packageToSend, queue);
+            socketPackageReceived.packageExtraReceive(socketPackageReceived, packageToSend, mDataQueue, mLocationQueue);
 
-            while (!queue.isEmpty()) {
+            while (!mDataQueue.isEmpty()) {
                 Log.d(TAG, "is OK");
 
-                final ByteBuffer buffer = queue.poll();
+                final ByteBuffer buffer = mDataQueue.poll();
 
                 //开始解析额外数据报文
                 final StateExtraType stateExtraType = new StateExtraType();
@@ -604,6 +540,29 @@ public class DeviceOperationActivity extends AppCompatActivity {
 //                byte[] settingData = {0x02, 0x03, 0x30, 0x00, 0x35};
 //                sendData(settingData);
             }
+
+            while (!mLocationQueue.isEmpty()) {
+                ByteBuffer buffer = mLocationQueue.poll();
+
+                LocationType locationType = new LocationType();
+                ESealOperation.operationGetLocationData(buffer, locationType);
+                String location = locationType.getLatitude() / 1000000.0 + " " + locationType.getLatitudeType() + " " +
+                        locationType.getLontitude() / 1000000.0 + " " + locationType.getLontitudeType();
+                Log.d(TAG, "didPackageReceived() returned: " + location);
+
+                if (isRecording) {
+                    StringBuilder sb = new StringBuilder();
+                    sb.append(textTemperature.getText() + " ");
+                    sb.append(location + " ");
+                    sb.append(textHumidity.getText() + " ");
+                    sb.append(textlocked.getText() + " ");
+                    sb.append(textShakeX.getText() + " ");
+                    sb.append(textShakeY.getText() + " ");
+                    sb.append(textShakeZ.getText());
+                    Log.d(TAG, "location string=" + sb.toString());
+                    DataLogUtils.logToFile(DataLogUtils.LOCATION_TYPE, sb.toString());
+                }
+            }
         }
 
         @Override
@@ -613,7 +572,8 @@ public class DeviceOperationActivity extends AppCompatActivity {
     };
 
     private SocketPackage socketPackageReceived = new SocketPackage();
-    private Queue<ByteBuffer> queue = new LinkedList<>();
+    private Queue<ByteBuffer> mDataQueue = new LinkedList<>();
+    private Queue<ByteBuffer> mLocationQueue = new LinkedList<>();
 
     private AppCompatDialog getProgressDialog() {
         if (mProgressDialog != null) {

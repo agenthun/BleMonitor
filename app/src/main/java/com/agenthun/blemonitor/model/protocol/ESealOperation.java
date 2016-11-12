@@ -4,6 +4,7 @@ import android.text.TextUtils;
 
 import com.agenthun.blemonitor.model.utils.Crc;
 import com.agenthun.blemonitor.model.utils.Encrypt;
+import com.agenthun.blemonitor.model.utils.LocationType;
 import com.agenthun.blemonitor.model.utils.PositionType;
 import com.agenthun.blemonitor.model.utils.SensorType;
 import com.agenthun.blemonitor.model.utils.StateExtraType;
@@ -11,6 +12,8 @@ import com.agenthun.blemonitor.model.utils.StateType;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+
+import static com.agenthun.blemonitor.R.id.temperature;
 
 /**
  * @project ESeal
@@ -328,7 +331,7 @@ public class ESealOperation {
         return buffer.array();
     }
 
-    //接收解析北斗主板与操作面板通信协议[02 31 40]
+    //接收解析北斗主板与操作面板通信协议[02 31 40], 接收数据
     public static void operationGetStateExtraData(ByteBuffer buffer, StateExtraType stateExtraType) {
         int year = buffer.get(ESEALBD_PROTOCOL_CMD_EXTRA_DATA_OFFSET + 0);
         year = (year >> 4) * 10 + (year & 0x0f) + 2000;
@@ -383,5 +386,42 @@ public class ESealOperation {
         stateExtraType.setShakeX(shakeX);
         stateExtraType.setShakeY(shakeY);
         stateExtraType.setShakeZ(shakeZ);
+    }
+
+    //接收解析北斗主板与操作面板通信协议[02 0C 41], 位置信息
+    public static void operationGetLocationData(ByteBuffer buffer, LocationType locationType) {
+        Character latitudeType;
+        Character lontitudeType;
+
+        buffer.order(ByteOrder.LITTLE_ENDIAN);
+
+        long latitude = buffer.getInt(0);
+        long lontitude = buffer.getInt(4);
+
+
+        if ((buffer.get(8) & 0xff) == 0x45) {
+            //E 东经
+//            Log.d(TAG, "E 东经");
+            latitudeType = 'E';
+        } else {
+            //W 西经
+//            Log.d(TAG, "W 西经");
+            latitudeType = 'W';
+        }
+
+        if ((buffer.get(9) & 0xff) == 0x4e) {
+            //N 北纬
+//            Log.d(TAG, "N 北纬");
+            lontitudeType = 'N';
+        } else {
+            //S 南纬
+//            Log.d(TAG, "S 南纬");
+            lontitudeType = 'S';
+        }
+
+        locationType.setLatitude(latitude);
+        locationType.setLatitudeType(latitudeType);
+        locationType.setLontitude(lontitude);
+        locationType.setLontitudeType(lontitudeType);
     }
 }
