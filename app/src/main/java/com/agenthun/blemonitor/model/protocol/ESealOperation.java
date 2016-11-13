@@ -390,33 +390,59 @@ public class ESealOperation {
 
     //接收解析北斗主板与操作面板通信协议[02 0C 41], 位置信息
     public static void operationGetLocationData(ByteBuffer buffer, LocationType locationType) {
-        Character latitudeType;
-        Character lontitudeType;
+        long latitude = 0;
+        long lontitude = 0;
+        char latitudeType = 'E';
+        char lontitudeType = 'W';
 
         buffer.order(ByteOrder.LITTLE_ENDIAN);
 
-        long latitude = buffer.getInt(0);
-        long lontitude = buffer.getInt(4);
-
-
-        if ((buffer.get(8) & 0xff) == 0x45) {
-            //E 东经
+        if (buffer.capacity() == 10) { //经纬度各4个字节
+            //经纬度各4个字节
+            latitude = buffer.getInt(0);
+            lontitude = buffer.getInt(4);
+            if ((buffer.get(8) & 0xff) == 0x45) {
+                //E 东经
 //            Log.d(TAG, "E 东经");
-            latitudeType = 'E';
-        } else {
-            //W 西经
+                latitudeType = 'E';
+            } else {
+                //W 西经
 //            Log.d(TAG, "W 西经");
-            latitudeType = 'W';
-        }
+                latitudeType = 'W';
+            }
 
-        if ((buffer.get(9) & 0xff) == 0x4e) {
-            //N 北纬
+            if ((buffer.get(9) & 0xff) == 0x4e) {
+                //N 北纬
 //            Log.d(TAG, "N 北纬");
-            lontitudeType = 'N';
-        } else {
-            //S 南纬
+                lontitudeType = 'N';
+            } else {
+                //S 南纬
 //            Log.d(TAG, "S 南纬");
-            lontitudeType = 'S';
+                lontitudeType = 'S';
+            }
+        } else if (buffer.capacity() == 18) { //经纬度各8个字节
+            //经纬度各8个字节
+            latitude = buffer.getLong(0);
+            lontitude = buffer.getLong(8);
+            if ((buffer.get(16) & 0xff) == 0x45) {
+                //E 东经
+//            Log.d(TAG, "E 东经");
+                latitudeType = 'E';
+            } else {
+                //W 西经
+//            Log.d(TAG, "W 西经");
+                latitudeType = 'W';
+            }
+
+            if ((buffer.get(17) & 0xff) == 0x4e) {
+                //N 北纬
+//            Log.d(TAG, "N 北纬");
+                lontitudeType = 'N';
+            } else {
+                //S 南纬
+//            Log.d(TAG, "S 南纬");
+                lontitudeType = 'S';
+            }
         }
 
         locationType.setLatitude(latitude);
