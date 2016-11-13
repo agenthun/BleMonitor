@@ -550,7 +550,7 @@ public class DeviceOperationActivity extends AppCompatActivity {
                 ESealOperation.operationGetLocationData(buffer, locationType);
                 String location = locationType.getLatitude() / 1000000.0 + " " + locationType.getLatitudeType() + " " +
                         locationType.getLontitude() / 1000000.0 + " " + locationType.getLontitudeType();
-                Log.d(TAG, "didPackageReceived() returned: " + location);
+                Log.d(TAG, "location: " + location);
 
                 if (isRecording) {
                     StringBuilder sb = new StringBuilder();
@@ -558,7 +558,10 @@ public class DeviceOperationActivity extends AppCompatActivity {
                     sb.append(location + " ");
                     sb.append(textTemperature.getText() + " ");
                     sb.append(textHumidity.getText() + " ");
-                    sb.append(textlocked.getText() + " ");
+                    //0:打开, 1:关闭
+                    sb.append(textlocked.getText().equals(getString(R.string.device_reply_lock)) ?
+                            1 : 0
+                            + " ");
                     sb.append(textShakeX.getText() + " ");
                     sb.append(textShakeY.getText() + " ");
                     sb.append(textShakeZ.getText());

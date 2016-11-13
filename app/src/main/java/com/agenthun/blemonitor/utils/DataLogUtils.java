@@ -53,7 +53,7 @@ public class DataLogUtils {
             return;
         }
         StringBuilder sb = new StringBuilder(tag);
-        sb.append(" " + data + "\n");
+        sb.append(" " + data + "\r\n");
         try {
             outputStream.write(sb.toString().getBytes());
         } catch (IOException e) {

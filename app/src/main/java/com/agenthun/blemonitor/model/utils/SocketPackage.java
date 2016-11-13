@@ -1,7 +1,5 @@
 package com.agenthun.blemonitor.model.utils;
 
-import android.util.Log;
-
 import java.nio.ByteBuffer;
 import java.util.Queue;
 

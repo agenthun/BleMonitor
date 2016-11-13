@@ -1,7 +1,5 @@
 package com.agenthun.blemonitor.model.protocol;
 
-import android.text.TextUtils;
-
 import com.agenthun.blemonitor.model.utils.Crc;
 import com.agenthun.blemonitor.model.utils.Encrypt;
 import com.agenthun.blemonitor.model.utils.LocationType;
@@ -12,8 +10,6 @@ import com.agenthun.blemonitor.model.utils.StateType;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-
-import static com.agenthun.blemonitor.R.id.temperature;
 
 /**
  * @project ESeal
@@ -135,7 +131,7 @@ public class ESealOperation {
 
     /**
      * 操作报文-加密
-     * power->00 关机, 01 开机
+     * power->00 关机, 01 开机getInt
      * safe->00 上封, 01 解封
      */
     public static byte[] operationOperation(int id, int rn, int key, byte power, byte safe) {
