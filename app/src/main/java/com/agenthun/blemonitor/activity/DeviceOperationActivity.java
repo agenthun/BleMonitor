@@ -548,8 +548,8 @@ public class DeviceOperationActivity extends AppCompatActivity {
 
                 LocationType locationType = new LocationType();
                 ESealOperation.operationGetLocationData(buffer, locationType);
-                String location = locationType.getLatitude() / 1000000.0 + " " + locationType.getLatitudeType() + " " +
-                        locationType.getLontitude() / 1000000.0 + " " + locationType.getLontitudeType();
+                String location = locationType.getLatitude() / 100000000.0 + " " + locationType.getLatitudeType() + " " +
+                        locationType.getLontitude() / 100000000.0 + " " + locationType.getLontitudeType();
                 Log.d(TAG, "location: " + location);
 
                 if (isRecording) {

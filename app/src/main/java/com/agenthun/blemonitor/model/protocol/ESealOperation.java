@@ -397,7 +397,7 @@ public class ESealOperation {
             //经纬度各4个字节
             latitude = buffer.getInt(0);
             lontitude = buffer.getInt(4);
-            if ((buffer.get(8) & 0xff) == 0x45) {
+            if ((buffer.get(9) & 0xff) == 0x45) {
                 //E 东经
 //            Log.d(TAG, "E 东经");
                 latitudeType = 'E';
@@ -407,7 +407,7 @@ public class ESealOperation {
                 latitudeType = 'W';
             }
 
-            if ((buffer.get(9) & 0xff) == 0x4e) {
+            if ((buffer.get(8) & 0xff) == 0x4e) {
                 //N 北纬
 //            Log.d(TAG, "N 北纬");
                 lontitudeType = 'N';
@@ -420,7 +420,7 @@ public class ESealOperation {
             //经纬度各8个字节
             latitude = buffer.getLong(0);
             lontitude = buffer.getLong(8);
-            if ((buffer.get(16) & 0xff) == 0x45) {
+            if ((buffer.get(17) & 0xff) == 0x45) {
                 //E 东经
 //            Log.d(TAG, "E 东经");
                 latitudeType = 'E';
@@ -430,7 +430,7 @@ public class ESealOperation {
                 latitudeType = 'W';
             }
 
-            if ((buffer.get(17) & 0xff) == 0x4e) {
+            if ((buffer.get(16) & 0xff) == 0x4e) {
                 //N 北纬
 //            Log.d(TAG, "N 北纬");
                 lontitudeType = 'N';
