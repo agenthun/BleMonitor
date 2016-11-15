@@ -558,9 +558,9 @@ public class DeviceOperationActivity extends AppCompatActivity {
                     sb.append(location + " ");
                     sb.append(textTemperature.getText() + " ");
                     sb.append(textHumidity.getText() + " ");
-                    //0:打开, 1:关闭
+                    //1:打开, 0:关闭
                     sb.append(textlocked.getText().equals(getString(R.string.device_reply_lock)) ?
-                            1 : 0
+                            0 : 1
                             + " ");
                     sb.append(textShakeX.getText() + " ");
                     sb.append(textShakeY.getText() + " ");
