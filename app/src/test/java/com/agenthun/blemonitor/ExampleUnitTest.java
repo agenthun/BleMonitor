@@ -4,6 +4,7 @@ import com.agenthun.blemonitor.model.protocol.ESealOperation;
 import com.agenthun.blemonitor.model.utils.LocationType;
 import com.agenthun.blemonitor.model.utils.SocketPackage;
 import com.agenthun.blemonitor.model.utils.StateExtraType;
+import com.agenthun.blemonitor.utils.DataLogUtils;
 
 import org.junit.Test;
 
@@ -25,6 +26,22 @@ public class ExampleUnitTest {
     private SocketPackage socketPackageReceived = new SocketPackage();
     private Queue<ByteBuffer> mDataQueue = new LinkedList<>();
     private Queue<ByteBuffer> mLocationQueue = new LinkedList<>();
+
+    @Test
+    public void doToString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("ab" + " ");
+        sb.append("ab" + " ");
+        sb.append("ab" + " ");
+        sb.append("ab" + " ");
+        //1:打开, 0:关闭
+        sb.append(false ?
+                "0 " : "1 ");
+        sb.append("ab" + " ");
+        sb.append("ab" + " ");
+        sb.append("ab");
+        System.out.printf(sb.toString());
+    }
 
     /*
     pdata:
