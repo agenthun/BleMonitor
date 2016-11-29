@@ -60,5 +60,4 @@ gradle-app.setting
 # # Work around https://youtrack.jetbrains.com/issue/IDEA-116898
 # gradle/wrapper/gradle-wrapper.properties
 
-/art/art.mp4
-/art/art_pre.mp4
+/art/BleMonitor_1_1-debug.apk
